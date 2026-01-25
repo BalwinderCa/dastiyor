@@ -17,6 +17,7 @@ model User {
   bio       String?  // Provider bio/description
   skills    String?  // Comma-separated skills
   avatar    String?  // Profile image URL
+  balance   Float    @default(0) // Provider earnings/balance (in TJS)
   role      String   @default("CUSTOMER") // CUSTOMER, PROVIDER, ADMIN
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

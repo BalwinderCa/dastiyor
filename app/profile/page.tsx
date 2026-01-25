@@ -191,7 +191,7 @@ export default async function ProfilePage() {
                         </div>
                     )}
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: user.role === 'PROVIDER' ? 'repeat(3, 1fr)' : '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
                         <div style={{ padding: '24px', borderRadius: '16px', backgroundColor: '#f9fafb', border: '1px solid var(--border)' }}>
                             <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px' }}>{user._count.tasks}</div>
                             <div style={{ color: 'var(--text-light)' }}>Задач опубликовано</div>
@@ -200,7 +200,36 @@ export default async function ProfilePage() {
                             <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px' }}>{user._count.responses}</div>
                             <div style={{ color: 'var(--text-light)' }}>Откликов отправлено</div>
                         </div>
+                        {user.role === 'PROVIDER' && (
+                            <div style={{ padding: '24px', borderRadius: '16px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                                <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px', color: '#166534' }}>
+                                    {user.balance.toFixed(2)} с.
+                                </div>
+                                <div style={{ color: '#15803d' }}>Баланс</div>
+                            </div>
+                        )}
                     </div>
+
+                    {/* Provider Dashboard Links */}
+                    {user.role === 'PROVIDER' && (
+                        <div style={{ marginBottom: '40px', padding: '24px', backgroundColor: '#F9FAFB', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                            <h3 className="heading-md" style={{ marginBottom: '16px' }}>Панель исполнителя</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                                <Link href="/provider/my-responses" className="btn btn-outline" style={{ justifyContent: 'flex-start', textAlign: 'left' }}>
+                                    📝 Мои отклики
+                                </Link>
+                                <Link href="/provider/active-tasks" className="btn btn-outline" style={{ justifyContent: 'flex-start', textAlign: 'left' }}>
+                                    ⚡ Активные задания
+                                </Link>
+                                <Link href="/provider/completed-tasks" className="btn btn-outline" style={{ justifyContent: 'flex-start', textAlign: 'left' }}>
+                                    ✅ Выполненные задания
+                                </Link>
+                                <Link href="/provider/payment-history" className="btn btn-outline" style={{ justifyContent: 'flex-start', textAlign: 'left' }}>
+                                    💳 История платежей
+                                </Link>
+                            </div>
+                        </div>
+                    )}
 
                     <div style={{ borderTop: '1px solid var(--border)', paddingTop: '32px' }}>
                         <h3 className="heading-md" style={{ marginBottom: '24px' }}>Информация об аккаунте</h3>

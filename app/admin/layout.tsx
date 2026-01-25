@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { verifyJWT } from '@/lib/auth';
 import Link from 'next/link';
-import { LayoutDashboard, Users, FileText, CreditCard, Settings, ShieldAlert, FolderTree } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, CreditCard, Settings, ShieldAlert, FolderTree, MessageSquare } from 'lucide-react';
 
 const menuItems = [
     { name: 'Обзор', href: '/admin', icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const menuItems = [
     { name: 'Категории', href: '/admin/categories', icon: FolderTree },
     { name: 'Подписки', href: '/admin/subscriptions', icon: CreditCard },
     { name: 'Модерация', href: '/admin/moderation', icon: ShieldAlert },
+    { name: 'Отзывы и жалобы', href: '/admin/reviews-complaints', icon: MessageSquare },
     { name: 'Настройки', href: '/admin/settings', icon: Settings },
 ];
 

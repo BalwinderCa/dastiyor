@@ -53,6 +53,21 @@ export async function POST(request: Request) {
             }
         });
 
+        // Update provider balance if task has fixed budget
+        if (task.assignedUserId && task.budgetType === 'fixed' && task.budgetAmount) {
+            const amount = parseFloat(task.budgetAmount);
+            if (!isNaN(amount) && amount > 0) {
+                await prisma.user.update({
+                    where: { id: task.assignedUserId },
+                    data: {
+                        balance: {
+                            increment: amount
+                        }
+                    }
+                });
+            }
+        }
+
         // Notify Provider if assigned
         if (task.assignedUserId) {
             await prisma.notification.create({
@@ -60,7 +75,7 @@ export async function POST(request: Request) {
                     userId: task.assignedUserId,
                     type: 'TASK_COMPLETED',
                     title: 'Задание выполнено',
-                    message: `Заказчик подтвердил выполнение задания "${task.title}".`,
+                    message: `Заказчик подтвердил выполнение задания "${task.title}".${task.budgetType === 'fixed' && task.budgetAmount ? ` Баланс пополнен на ${task.budgetAmount} с.` : ''}`,
                     link: `/tasks/${taskId}`
                 }
             });
