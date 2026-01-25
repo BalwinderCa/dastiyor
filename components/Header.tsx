@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { verifyJWT } from '@/lib/auth';
 import UserMenu from './UserMenu';
-import NotificationBell from './NotificationBell';
-import { Handshake, LogIn } from 'lucide-react';
+import { Handshake, LogIn, Heart } from 'lucide-react';
 
 export default async function Header() {
     const cookieStore = await cookies();
@@ -103,6 +102,23 @@ export default async function Header() {
 
                 {/* Right Actions */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    {user && (
+                        <Link href="/create-task/template" style={{
+                            backgroundColor: '#F3F4F6',
+                            color: '#374151',
+                            padding: '10px 20px',
+                            borderRadius: '8px',
+                            fontWeight: '600',
+                            fontSize: '0.9rem',
+                            transition: 'background-color 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '1px solid #E5E7EB'
+                        }}>
+                            Шаблоны
+                        </Link>
+                    )}
                     <Link href="/create-task" style={{
                         backgroundColor: '#6366F1', // Indigo-500
                         color: 'white',
@@ -120,7 +136,32 @@ export default async function Header() {
 
                     {user ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <NotificationBell />
+                            {user.role === 'PROVIDER' && (
+                                <Link href="/favorites" style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    padding: '8px 16px',
+                                    borderRadius: '8px',
+                                    color: '#6B7280',
+                                    fontSize: '0.9rem',
+                                    fontWeight: '500',
+                                    textDecoration: 'none',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#F9FAFB';
+                                    e.currentTarget.style.color = '#EF4444';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = 'transparent';
+                                    e.currentTarget.style.color = '#6B7280';
+                                }}
+                                >
+                                    <Heart size={18} />
+                                    Избранное
+                                </Link>
+                            )}
                             <UserMenu user={user} />
                         </div>
                     ) : (

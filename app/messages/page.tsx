@@ -3,6 +3,7 @@ import { verifyJWT } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import ChatInterface from '@/components/chat/ChatInterface';
 
 export default async function MessagesPage() {
@@ -124,7 +125,14 @@ export default async function MessagesPage() {
                                             borderBottom: '1px solid #f3f4f6',
                                             textDecoration: 'none',
                                             color: 'inherit',
-                                            transition: 'background-color 0.2s'
+                                            transition: 'background-color 0.2s',
+                                            cursor: 'pointer'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = '#f9fafb';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'transparent';
                                         }}
                                     >
                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -166,7 +174,21 @@ export default async function MessagesPage() {
                     </div>
 
                     {/* Chat Interface */}
-                    <ChatInterface currentUserId={userId} />
+                    <Suspense fallback={
+                        <div style={{
+                            backgroundColor: 'white',
+                            borderRadius: '16px',
+                            border: '1px solid var(--border)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--text-light)'
+                        }}>
+                            <div>Загрузка чата...</div>
+                        </div>
+                    }>
+                        <ChatInterface currentUserId={userId} />
+                    </Suspense>
                 </div>
             </div>
         </div>

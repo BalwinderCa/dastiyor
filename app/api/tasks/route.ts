@@ -2,13 +2,14 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { verifyJWT } from '@/lib/auth';
 import { cookies } from 'next/headers';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: Request) {
     try {
         // 1. Authenticate Request
         const cookieStore = await cookies();
         const token = cookieStore.get('token')?.value;
-        console.log('API /tasks Cookies:', cookieStore.getAll());
+        logger.debug('API /tasks request', { hasToken: !!token });
 
         if (!token) {
             return NextResponse.json(
@@ -76,9 +77,9 @@ export async function POST(request: Request) {
         );
 
     } catch (error: any) {
-        console.error('Task Creation Error:', error);
+        logger.error('Task Creation Error', { error: error.message, stack: error.stack });
         return NextResponse.json(
-            { error: 'Internal Server Error', details: error.message }, // Return details for debugging
+            { error: 'Internal Server Error' },
             { status: 500 }
         );
     }

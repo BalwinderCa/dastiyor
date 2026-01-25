@@ -1,4 +1,6 @@
 'use client';
+import { toast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 type TaskSidebarProps = {
     task: {
@@ -16,6 +18,7 @@ type TaskSidebarProps = {
 };
 
 export default function TaskSidebar({ task, isOwner, canRespond }: TaskSidebarProps) {
+    const { confirm, Dialog } = useConfirm();
     const budgetDisplay = task.budgetType === 'fixed'
         ? `${task.budgetAmount || '0'} с.`
         : 'Договорная';
@@ -69,7 +72,9 @@ export default function TaskSidebar({ task, isOwner, canRespond }: TaskSidebarPr
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <>
+            <Dialog />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Action Card */}
             <div style={{
                 backgroundColor: 'var(--white)',
@@ -118,17 +123,26 @@ export default function TaskSidebar({ task, isOwner, canRespond }: TaskSidebarPr
                     <div style={{ marginTop: '16px', borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
                         <button
                             onClick={async () => {
-                                if (!confirm('Вы уверены, что хотите отменить задание?')) return;
+                                const confirmed = await confirm(
+                                    'Вы уверены, что хотите отменить задание?',
+                                    'Отменить задание',
+                                    'warning'
+                                );
+                                if (!confirmed) return;
                                 try {
                                     const res = await fetch('/api/tasks/cancel', {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ taskId: task.id })
                                     });
-                                    if (res.ok) window.location.reload();
-                                    else alert('Не удалось отменить задание');
+                                    if (res.ok) {
+                                        toast.success('Задание отменено');
+                                        setTimeout(() => window.location.reload(), 1000);
+                                    } else {
+                                        toast.error('Не удалось отменить задание');
+                                    }
                                 } catch (e) {
-                                    alert('Ошибка отмены задания');
+                                    toast.error('Ошибка отмены задания');
                                 }
                             }}
                             className="btn btn-outline"
@@ -177,5 +191,6 @@ export default function TaskSidebar({ task, isOwner, canRespond }: TaskSidebarPr
                 </div>
             </div>
         </div>
+        </>
     );
 }

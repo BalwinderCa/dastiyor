@@ -1,5 +1,9 @@
+'use client';
+
 import Link from 'next/link';
-import { MapPin, Clock, MessageCircle, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MapPin, Clock, MessageCircle, Zap, Heart, Share2 } from 'lucide-react';
+import { toast } from '@/components/ui/Toast';
 
 export type Task = {
     id: string;
@@ -20,8 +24,60 @@ const urgencyConfig: Record<string, { label: string; color: string; bg: string }
 };
 
 export default function TaskCard({ task }: { task: Task }) {
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const urgency = urgencyConfig[task.urgency || 'normal'] || urgencyConfig.normal;
     const isNegotiable = task.budget === 'Договорная';
+
+    useEffect(() => {
+        // Check if task is favorited
+        fetch(`/api/tasks/favorite?taskId=${task.id}`)
+            .then(res => res.json())
+            .then(data => setIsFavorite(data.isFavorite || false))
+            .catch(() => {});
+    }, [task.id]);
+
+    const handleFavorite = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsLoading(true);
+        try {
+            const res = await fetch('/api/tasks/favorite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ taskId: task.id })
+            });
+            const data = await res.json();
+            setIsFavorite(data.isFavorite);
+            toast.success(data.isFavorite ? 'Добавлено в избранное' : 'Удалено из избранного');
+        } catch (err) {
+            toast.error('Ошибка при сохранении');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleShare = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const url = `${window.location.origin}/tasks/${task.id}`;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: task.title,
+                    text: task.description.substring(0, 100),
+                    url: url
+                });
+                toast.success('Задание поделено');
+            } catch (err) {
+                // User cancelled or error
+            }
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(url);
+            toast.success('Ссылка скопирована в буфер обмена');
+        }
+    };
 
     return (
         <div style={{
@@ -33,6 +89,72 @@ export default function TaskCard({ task }: { task: Task }) {
             position: 'relative',
             transition: 'all 0.2s ease',
         }}>
+            {/* Action buttons */}
+            <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
+                <button
+                    onClick={handleShare}
+                    style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '8px',
+                        border: '1px solid #E5E7EB',
+                        backgroundColor: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#F9FAFB';
+                        e.currentTarget.style.borderColor = '#3B82F6';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'white';
+                        e.currentTarget.style.borderColor = '#E5E7EB';
+                    }}
+                    title="Поделиться"
+                >
+                    <Share2 size={18} color="#6B7280" />
+                </button>
+                <button
+                    onClick={handleFavorite}
+                    disabled={isLoading}
+                    style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '8px',
+                        border: '1px solid #E5E7EB',
+                        backgroundColor: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        opacity: isLoading ? 0.6 : 1
+                    }}
+                    onMouseEnter={(e) => {
+                        if (!isLoading) {
+                            e.currentTarget.style.backgroundColor = '#FEF2F2';
+                            e.currentTarget.style.borderColor = '#EF4444';
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (!isLoading) {
+                            e.currentTarget.style.backgroundColor = 'white';
+                            e.currentTarget.style.borderColor = '#E5E7EB';
+                        }
+                    }}
+                    title={isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+                >
+                    <Heart 
+                        size={18} 
+                        color={isFavorite ? "#EF4444" : "#6B7280"} 
+                        fill={isFavorite ? "#EF4444" : "none"} 
+                    />
+                </button>
+            </div>
+
             {/* Absolute link for entire card */}
             <Link href={`/tasks/${task.id}`} style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
 

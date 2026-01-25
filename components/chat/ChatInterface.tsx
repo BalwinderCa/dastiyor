@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import { toast } from '@/components/ui/Toast';
 
 type Message = {
     id: string;
@@ -91,12 +92,12 @@ export default function ChatInterface({ currentUserId }: Props) {
         // Validate file
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
-            alert('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+            toast.error('Выберите файл изображения (JPEG, PNG, GIF или WebP)');
             return;
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            alert('Image must be less than 5MB');
+            toast.error('Изображение должно быть меньше 5MB');
             return;
         }
 
@@ -149,7 +150,7 @@ export default function ChatInterface({ currentUserId }: Props) {
             if (selectedImage) {
                 imageUrl = await uploadImage(selectedImage);
                 if (!imageUrl) {
-                    alert('Не удалось загрузить изображение');
+                    toast.error('Не удалось загрузить изображение');
                     setSending(false);
                     setUploading(false);
                     return;

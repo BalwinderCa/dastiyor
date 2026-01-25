@@ -19,6 +19,8 @@ model User {
   avatar    String?  // Profile image URL
   balance   Float    @default(0) // Provider earnings/balance (in TJS)
   role      String   @default("CUSTOMER") // CUSTOMER, PROVIDER, ADMIN
+  isVerified Boolean  @default(false) // Provider verification status
+  verificationDocuments String? // JSON array of document URLs
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -39,6 +41,9 @@ model User {
   
   // Notifications
   notifications    Notification[]
+  
+  // Favorites
+  favoriteTasks   TaskFavorite[]
 }
 
 // Task Model
@@ -71,6 +76,9 @@ model Task {
   // Chat & Reviews
   messages Message[]
   review   Review?
+  
+  // Favorites
+  favorites TaskFavorite[]
 }
 
 // Response Model (Offers from Providers)
@@ -171,4 +179,18 @@ model Notification {
   // Recipient
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+}
+
+// Task Favorite Model (Bookmarks)
+model TaskFavorite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relationships
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+
+  @@unique([userId, taskId])
 }

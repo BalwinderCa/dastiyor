@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskFilterSidebar from '@/components/tasks/TaskFilterSidebar';
+import Pagination from '@/components/ui/Pagination';
 import { Suspense } from 'react';
 
 type Props = {
@@ -14,12 +15,17 @@ type Props = {
         sort?: string;
         dateFrom?: string;
         dateTo?: string;
+        page?: string;
     }
 }
 
+const TASKS_PER_PAGE = 20;
+
 export default async function TasksPage({ searchParams }: Props) {
     const params = await searchParams;
-    const { category, query, city, minBudget, maxBudget, urgency, sort } = params;
+    const { category, query, city, minBudget, maxBudget, urgency, sort, page } = params;
+    const currentPage = parseInt(page || '1', 10);
+    const skip = (currentPage - 1) * TASKS_PER_PAGE;
 
     // Build filter
     const where: any = { status: 'OPEN' };
@@ -110,9 +116,14 @@ export default async function TasksPage({ searchParams }: Props) {
         orderBy = { budgetAmount: 'asc' };
     }
 
+    // Get total count for pagination
+    const totalTasks = await prisma.task.count({ where });
+
     const tasks = await prisma.task.findMany({
         where,
         orderBy,
+        skip,
+        take: TASKS_PER_PAGE,
         include: {
             _count: {
                 select: { responses: true }
@@ -225,8 +236,13 @@ export default async function TasksPage({ searchParams }: Props) {
                             border: '1px solid var(--border)'
                         }}>
                             <span style={{ color: 'var(--text)', fontWeight: '600' }}>
-                                {sortedTasks.length} {sortedTasks.length === 1 ? 'задание' : 'заданий'} найдено
+                                {totalTasks} {totalTasks === 1 ? 'задание' : 'заданий'} найдено
                                 {category && <span style={{ color: 'var(--text-light)', fontWeight: '400' }}> в "{category}"</span>}
+                                {totalTasks > TASKS_PER_PAGE && (
+                                    <span style={{ color: 'var(--text-light)', fontWeight: '400', fontSize: '0.9rem' }}>
+                                        {' • '}Показано {skip + 1}-{Math.min(skip + TASKS_PER_PAGE, totalTasks)} из {totalTasks}
+                                    </span>
+                                )}
                             </span>
                             <form>
                                 <select

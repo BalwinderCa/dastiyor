@@ -1,4 +1,5 @@
 'use client';
+import { toast } from '@/components/ui/Toast';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -86,14 +87,13 @@ export default function SubscriptionPlans({ currentPlan, userId }: Props) {
 
             if (res.ok) {
                 router.refresh();
-                alert('Подписка успешно активирована! 🎉');
+                toast.success('Подписка успешно активирована! 🎉');
             } else {
                 const data = await res.json();
-                alert(data.error || 'Не удалось подписаться');
+                toast.error(data.error || 'Не удалось подписаться');
             }
         } catch (error) {
-            console.error('Subscription error:', error);
-            alert('Произошла ошибка. Попробуйте еще раз.');
+            toast.error('Произошла ошибка. Попробуйте еще раз.');
         } finally {
             setLoading(null);
         }

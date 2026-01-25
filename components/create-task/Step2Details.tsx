@@ -32,13 +32,11 @@ export default function Step2Details({ onNext, onBack, data }: StepProps) {
                     const json = await res.json();
                     setImages(prev => [...prev, json.url]);
                 } else {
-                    console.error('Upload failed');
-                    alert('Failed to upload image');
+                    toast.error('Не удалось загрузить изображение');
                 }
             }
         } catch (err) {
-            console.error(err);
-            alert('Error uploading image');
+            toast.error('Ошибка при загрузке изображения');
         } finally {
             setUploading(false);
         }

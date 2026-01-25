@@ -1,4 +1,6 @@
 'use client';
+import { toast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Save, X, Wrench, Monitor, SprayCan, Truck, Briefcase, Home, Car, Camera, GraduationCap, Heart, Music, Utensils } from 'lucide-react';
@@ -48,6 +50,7 @@ type Category = {
 };
 
 export default function AdminCategoriesPage() {
+    const { confirm, Dialog } = useConfirm();
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -87,20 +90,34 @@ export default function AdminCategoriesPage() {
     };
 
     const handleSaveEdit = (id: string) => {
+        if (!editForm.name.trim()) {
+            toast.warning('Введите название категории');
+            return;
+        }
         setCategories(prev => prev.map(cat =>
             cat.id === id ? { ...cat, ...editForm } : cat
         ));
         setEditingId(null);
+        toast.success('Категория обновлена');
     };
 
-    const handleDelete = (id: string) => {
-        if (confirm('Вы уверены, что хотите удалить эту категорию?')) {
+    const handleDelete = async (id: string) => {
+        const confirmed = await confirm(
+            'Вы уверены, что хотите удалить эту категорию?',
+            'Удалить категорию',
+            'danger'
+        );
+        if (confirmed) {
             setCategories(prev => prev.filter(cat => cat.id !== id));
+            toast.success('Категория удалена');
         }
     };
 
     const handleAddCategory = () => {
-        if (!newCategory.name.trim()) return;
+        if (!newCategory.name.trim()) {
+            toast.warning('Введите название категории');
+            return;
+        }
 
         const newCat: Category = {
             id: Date.now().toString(),
@@ -112,6 +129,7 @@ export default function AdminCategoriesPage() {
         setCategories(prev => [...prev, newCat]);
         setNewCategory({ name: '', icon: 'Wrench', color: '#6366F1' });
         setShowAddForm(false);
+        toast.success('Категория добавлена');
     };
 
     if (loading) {
@@ -123,7 +141,9 @@ export default function AdminCategoriesPage() {
     }
 
     return (
-        <div>
+        <>
+            <Dialog />
+            <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <h2 className="heading-lg">Управление категориями</h2>
                 <button
@@ -358,5 +378,6 @@ export default function AdminCategoriesPage() {
                 </p>
             </div>
         </div>
+        </>
     );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from '@/components/ui/Toast';
 
 type Props = {
     taskId: string;
@@ -18,7 +19,7 @@ export default function ReviewForm({ taskId, providerName, onReviewSubmitted }: 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (rating === 0) {
-            alert('Please select a rating');
+            toast.warning('Пожалуйста, выберите оценку');
             return;
         }
 
@@ -32,14 +33,14 @@ export default function ReviewForm({ taskId, providerName, onReviewSubmitted }: 
 
             if (res.ok) {
                 setSubmitted(true);
+                toast.success('Отзыв успешно отправлен!');
                 onReviewSubmitted?.();
             } else {
                 const data = await res.json();
-                alert(data.error || 'Failed to submit review');
+                toast.error(data.error || 'Не удалось отправить отзыв');
             }
         } catch (error) {
-            console.error('Review error:', error);
-            alert('An error occurred');
+            toast.error('Произошла ошибка');
         } finally {
             setSubmitting(false);
         }

@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 
 type ResponseListProps = {
     taskId: string;
@@ -14,6 +16,7 @@ type ResponseListProps = {
 
 export default function ResponseList({ taskId, responses, currentUserId, taskOwnerId, assignedUserId, taskStatus }: ResponseListProps) {
     const router = useRouter();
+    const { confirm, Dialog } = useConfirm();
     const [submitting, setSubmitting] = useState(false);
     const [acceptingId, setAcceptingId] = useState<string | null>(null);
     const [rejectingId, setRejectingId] = useState<string | null>(null);
@@ -46,26 +49,36 @@ export default function ResponseList({ taskId, responses, currentUserId, taskOwn
             const json = await res.json();
 
             if (res.ok) {
-                window.location.reload();
+                toast.success('Отклик успешно отправлен!');
+                setTimeout(() => window.location.reload(), 1000);
             } else {
                 if (res.status === 403 && json.code === 'SUBSCRIPTION_REQUIRED') {
-                    if (confirm('You need an active subscription to respond to tasks. Go to plans?')) {
+                    const confirmed = await confirm(
+                        'Для ответа на задания требуется активная подписка. Перейти к планам?',
+                        'Требуется подписка',
+                        'warning'
+                    );
+                    if (confirmed) {
                         router.push('/subscription');
                     }
                 } else {
-                    alert(json.error || 'Failed to submit response');
+                    toast.error(json.error || 'Не удалось отправить отклик');
                 }
             }
         } catch (err) {
-            console.error(err);
-            alert('Error submitting response');
+            toast.error('Ошибка при отправке отклика');
         } finally {
             setSubmitting(false);
         }
     }
 
     async function handleAccept(providerId: string) {
-        if (!confirm('Are you sure you want to accept this offer? This will mark the task as In Progress.')) return;
+        const confirmed = await confirm(
+            'Вы уверены, что хотите принять это предложение? Задание будет отмечено как "В работе".',
+            'Принять предложение',
+            'info'
+        );
+        if (!confirmed) return;
 
         setAcceptingId(providerId);
         try {
@@ -76,20 +89,25 @@ export default function ResponseList({ taskId, responses, currentUserId, taskOwn
             });
 
             if (res.ok) {
-                window.location.reload();
+                toast.success('Предложение принято!');
+                setTimeout(() => window.location.reload(), 1000);
             } else {
-                alert('Failed to accept offer');
+                toast.error('Не удалось принять предложение');
             }
         } catch (err) {
-            console.error(err);
-            alert('Error accepting offer');
+            toast.error('Ошибка при принятии предложения');
         } finally {
             setAcceptingId(null);
         }
     }
 
     async function handleReject(responseId: string) {
-        if (!confirm('Are you sure you want to reject this response?')) return;
+        const confirmed = await confirm(
+            'Вы уверены, что хотите отклонить этот отклик?',
+            'Отклонить отклик',
+            'warning'
+        );
+        if (!confirmed) return;
 
         setRejectingId(responseId);
         try {
@@ -100,21 +118,26 @@ export default function ResponseList({ taskId, responses, currentUserId, taskOwn
             });
 
             if (res.ok) {
-                window.location.reload();
+                toast.success('Отклик отклонен');
+                setTimeout(() => window.location.reload(), 1000);
             } else {
                 const json = await res.json();
-                alert(json.error || 'Failed to reject response');
+                toast.error(json.error || 'Не удалось отклонить отклик');
             }
         } catch (err) {
-            console.error(err);
-            alert('Error rejecting response');
+            toast.error('Ошибка при отклонении отклика');
         } finally {
             setRejectingId(null);
         }
     }
 
     async function handleComplete() {
-        if (!confirm('Are you sure the task has been completed? This action cannot be undone.')) return;
+        const confirmed = await confirm(
+            'Вы уверены, что задание выполнено? Это действие нельзя отменить.',
+            'Завершить задание',
+            'warning'
+        );
+        if (!confirmed) return;
 
         setCompletingTask(true);
         try {
@@ -125,20 +148,22 @@ export default function ResponseList({ taskId, responses, currentUserId, taskOwn
             });
 
             if (res.ok) {
-                window.location.reload();
+                toast.success('Задание отмечено как выполненное!');
+                setTimeout(() => window.location.reload(), 1000);
             } else {
-                alert('Failed to mark task as complete');
+                toast.error('Не удалось отметить задание как выполненное');
             }
         } catch (err) {
-            console.error(err);
-            alert('Error completing task');
+            toast.error('Ошибка при завершении задания');
         } finally {
             setCompletingTask(false);
         }
     }
 
     return (
-        <div style={{ marginTop: '40px' }}>
+        <>
+            <Dialog />
+            <div style={{ marginTop: '40px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h3 className="heading-md">Отклики ({responses.length})</h3>
 
@@ -290,5 +315,6 @@ export default function ResponseList({ taskId, responses, currentUserId, taskOwn
                 </div>
             )}
         </div>
+        </>
     );
 }

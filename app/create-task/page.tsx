@@ -1,15 +1,18 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MapPin, Lightbulb } from 'lucide-react';
 import Step1Category from '@/components/create-task/Step1Category';
 import Step2Details from '@/components/create-task/Step2Details';
 import Step3Location from '@/components/create-task/Step3Location';
 import Step4Budget from '@/components/create-task/Step4Budget';
+import { toast } from '@/components/ui/Toast';
 
 export default function CreateTaskPage() {
     const [step, setStep] = useState(1);
     const [uploading, setUploading] = useState(false);
+    const DRAFT_KEY = 'task_draft';
+    
     const [formData, setFormData] = useState({
         category: '',
         subcategory: '',
@@ -24,6 +27,56 @@ export default function CreateTaskPage() {
         images: [] as string[],
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [hasDraft, setHasDraft] = useState(false);
+
+    // Load draft or template on mount
+    useEffect(() => {
+        // Check for template first
+        const template = sessionStorage.getItem('task_template');
+        if (template) {
+            try {
+                const templateData = JSON.parse(template);
+                setFormData(prev => ({ ...prev, ...templateData }));
+                sessionStorage.removeItem('task_template');
+                toast.info('Шаблон загружен');
+            } catch (e) {
+                // Invalid template, ignore
+            }
+        }
+        
+        // Then check for draft
+        const savedDraft = localStorage.getItem(DRAFT_KEY);
+        if (savedDraft) {
+            try {
+                const draft = JSON.parse(savedDraft);
+                setFormData(prev => ({ ...prev, ...draft }));
+                setHasDraft(true);
+            } catch (e) {
+                // Invalid draft, ignore
+            }
+        }
+    }, []);
+
+    // Auto-save draft
+    useEffect(() => {
+        const hasContent = formData.title || formData.description || formData.category;
+        if (hasContent && !isSubmitting) {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(formData));
+            setHasDraft(true);
+        }
+    }, [formData, isSubmitting]);
+
+    const saveDraft = () => {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(formData));
+        toast.success('Черновик сохранен');
+        setHasDraft(true);
+    };
+
+    const clearDraft = () => {
+        localStorage.removeItem(DRAFT_KEY);
+        setHasDraft(false);
+        toast.info('Черновик удален');
+    };
 
     // Add upload handlers
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,12 +93,11 @@ export default function CreateTaskPage() {
                     const json = await res.json();
                     setFormData(prev => ({ ...prev, images: [...prev.images, json.url] }));
                 } else {
-                    alert('Failed to upload image');
+                    toast.error('Не удалось загрузить изображение');
                 }
             }
         } catch (err) {
-            console.error(err);
-            alert('Error uploading image');
+            toast.error('Ошибка при загрузке изображения');
         } finally {
             setUploading(false);
         }
@@ -83,24 +135,26 @@ export default function CreateTaskPage() {
             });
 
             if (res.status === 401) {
-                alert('You must be logged in to post a task.');
+                toast.warning('Необходимо войти в систему для создания задания');
                 router.push('/login?redirect=/create-task');
                 return;
             }
 
             if (!res.ok) {
                 const errorData = await res.json();
-                console.error('Task creation failed:', errorData);
-                throw new Error(errorData.error || 'Failed to create task');
+                throw new Error(errorData.error || 'Не удалось создать задание');
             }
 
             const json = await res.json();
+            // Clear draft on successful submission
+            localStorage.removeItem(DRAFT_KEY);
+            setHasDraft(false);
+            toast.success('Задание успешно создано!');
             // Redirect to the new task details
-            router.push(`/tasks/${json.task.id}`);
+            setTimeout(() => router.push(`/tasks/${json.task.id}`), 1000);
 
         } catch (error: any) {
-            console.error('Submit error:', error);
-            alert(`Error creating task: ${error.message}`);
+            toast.error(`Ошибка при создании задания: ${error.message}`);
             setIsSubmitting(false);
         }
     };
@@ -339,15 +393,47 @@ export default function CreateTaskPage() {
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '40px', alignItems: 'center' }}>
-                            <div style={{ fontSize: '0.85rem', color: '#6B7280' }}>Вы сможете изменить детали после публикации</div>
-                            <button style={{ padding: '12px 24px', border: '1px solid #D1D5DB', borderRadius: '8px', backgroundColor: 'white', fontWeight: '600', color: '#374151', cursor: 'pointer' }}>Сохранить черновик</button>
+                            <div style={{ fontSize: '0.85rem', color: '#6B7280' }}>
+                                {hasDraft && '💾 Черновик сохранен'}
+                            </div>
+                            {hasDraft && (
+                                <button
+                                    onClick={clearDraft}
+                                    style={{
+                                        padding: '12px 24px',
+                                        border: '1px solid #D1D5DB',
+                                        borderRadius: '8px',
+                                        backgroundColor: 'white',
+                                        fontWeight: '600',
+                                        color: '#6B7280',
+                                        cursor: 'pointer',
+                                        fontSize: '0.9rem'
+                                    }}
+                                >
+                                    Удалить черновик
+                                </button>
+                            )}
+                            <button
+                                onClick={saveDraft}
+                                style={{
+                                    padding: '12px 24px',
+                                    border: '1px solid #D1D5DB',
+                                    borderRadius: '8px',
+                                    backgroundColor: 'white',
+                                    fontWeight: '600',
+                                    color: '#374151',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                💾 Сохранить черновик
+                            </button>
                             <button
                                 onClick={() => handleSubmit(formData)}
                                 disabled={isSubmitting}
                                 style={{
                                     padding: '12px 32px',
                                     borderRadius: '8px',
-                                    backgroundColor: '#06B6D4', // Cyan-500
+                                    backgroundColor: '#06B6D4',
                                     color: 'white',
                                     fontWeight: '600',
                                     border: 'none',
