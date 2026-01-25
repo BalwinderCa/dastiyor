@@ -1,0 +1,102 @@
+import Link from 'next/link';
+import { Handshake } from 'lucide-react';
+
+export default function Footer() {
+    return (
+        <footer style={{ backgroundColor: '#FFFFFF', padding: '80px 0 40px', borderTop: '1px solid #E5E7EB', marginTop: 'auto' }}>
+            <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '40px',
+                    marginBottom: '60px'
+                }}>
+                    {/* Brand Column */}
+                    <div>
+                        <Link href="/" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            textDecoration: 'none',
+                            marginBottom: '20px'
+                        }}>
+                            <div style={{
+                                width: '32px',
+                                height: '32px',
+                                backgroundColor: '#6366F1', // Indigo-500
+                                borderRadius: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white'
+                            }}>
+                                <Handshake size={20} strokeWidth={2.5} />
+                            </div>
+                            <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827' }}>Dastiyor</span>
+                        </Link>
+                        <p style={{ color: '#6B7280', lineHeight: '1.6', fontSize: '0.95rem', maxWidth: '300px' }}>
+                            Будущее локальных услуг. Помогаем исполнителям и объединяем сообщества.
+                        </p>
+                    </div>
+
+                    {/* Platform Column */}
+                    <div>
+                        <h4 style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '24px' }}>
+                            Платформа
+                        </h4>
+                        <ul style={{ display: 'flex', flexDirection: 'column', gap: '16px', listStyle: 'none', padding: 0 }}>
+                            <li><Link href="/how-it-works" style={{ color: '#4B5563', textDecoration: 'none', fontSize: '0.95rem' }}>Как это работает</Link></li>
+                            <li><Link href="/safety" style={{ color: '#4B5563', textDecoration: 'none', fontSize: '0.95rem' }}>Безопасность</Link></li>
+                            <li><Link href="/help" style={{ color: '#4B5563', textDecoration: 'none', fontSize: '0.95rem' }}>Помощь</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Categories Column */}
+                    <div>
+                        <h4 style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '24px' }}>
+                            Категории
+                        </h4>
+                        <ul style={{ display: 'flex', flexDirection: 'column', gap: '16px', listStyle: 'none', padding: 0 }}>
+                            <li><Link href="/tasks?category=Cleaning" style={{ color: '#4B5563', textDecoration: 'none', fontSize: '0.95rem' }}>Уборка</Link></li>
+                            <li><Link href="/tasks?category=Handyman" style={{ color: '#4B5563', textDecoration: 'none', fontSize: '0.95rem' }}>Мастер на час</Link></li>
+                            <li><Link href="/tasks?category=Delivery" style={{ color: '#4B5563', textDecoration: 'none', fontSize: '0.95rem' }}>Доставка</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Join Us Column */}
+                    <div>
+                        <h4 style={{ fontSize: '0.8rem', fontWeight: '800', color: '#111827', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '24px' }}>
+                            Присоединяйтесь
+                        </h4>
+                        <ul style={{ display: 'flex', flexDirection: 'column', gap: '16px', listStyle: 'none', padding: 0 }}>
+                            <li><Link href="/register?type=provider" style={{ color: '#4B5563', textDecoration: 'none', fontSize: '0.95rem' }}>Стать исполнителем</Link></li>
+                            <li><Link href="/contractor-plans" style={{ color: '#4B5563', textDecoration: 'none', fontSize: '0.95rem' }}>Тарифы</Link></li>
+                            <li><Link href="/mobile-app" style={{ color: '#4B5563', textDecoration: 'none', fontSize: '0.95rem' }}>Мобильное приложение</Link></li>
+                        </ul>
+                    </div>
+                </div>
+
+                {/* Bottom Bar */}
+                <div style={{
+                    paddingTop: '32px',
+                    borderTop: '1px solid #F3F4F6',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '20px',
+                    color: '#9CA3AF',
+                    fontSize: '0.9rem'
+                }}>
+                    <div>
+                        © {new Date().getFullYear()} Dastiyor Inc. Все права защищены.
+                    </div>
+                    <div style={{ display: 'flex', gap: '32px' }}>
+                        <Link href="/privacy" style={{ color: '#6B7280', textDecoration: 'none' }}>Конфиденциальность</Link>
+                        <Link href="/terms" style={{ color: '#6B7280', textDecoration: 'none' }}>Условия использования</Link>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    );
+}

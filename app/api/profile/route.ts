@@ -1,0 +1,100 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { verifyJWT } from '@/lib/auth';
+import { cookies } from 'next/headers';
+
+// GET - Get current user profile
+export async function GET() {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get('token')?.value;
+
+        if (!token) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const payload = await verifyJWT(token);
+        if (!payload || !payload.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: payload.id as string },
+            select: {
+                id: true,
+                fullName: true,
+                email: true,
+                phone: true,
+                bio: true,
+                skills: true,
+                avatar: true,
+                role: true,
+                createdAt: true
+            }
+        });
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ user });
+
+    } catch (error) {
+        console.error('Get Profile Error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
+// PUT - Update user profile
+export async function PUT(request: Request) {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get('token')?.value;
+
+        if (!token) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const payload = await verifyJWT(token);
+        if (!payload || !payload.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const body = await request.json();
+        const { fullName, phone, bio, skills, avatar } = body;
+
+        if (!fullName || fullName.trim().length < 2) {
+            return NextResponse.json({ error: 'Name must be at least 2 characters' }, { status: 400 });
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: payload.id as string },
+            data: {
+                fullName: fullName.trim(),
+                phone: phone?.trim() || null,
+                bio: bio?.trim() || null,
+                skills: skills?.trim() || null,
+                avatar: avatar || null
+            },
+            select: {
+                id: true,
+                fullName: true,
+                email: true,
+                phone: true,
+                bio: true,
+                skills: true,
+                avatar: true,
+                role: true
+            }
+        });
+
+        return NextResponse.json({
+            message: 'Profile updated successfully',
+            user: updatedUser
+        });
+
+    } catch (error) {
+        console.error('Update Profile Error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}

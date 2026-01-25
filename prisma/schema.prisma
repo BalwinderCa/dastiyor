@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id        String   @id @default(cuid())
+  fullName  String
+  email     String   @unique
+  password  String
+  phone     String?
+  bio       String?  // Provider bio/description
+  skills    String?  // Comma-separated skills
+  avatar    String?  // Profile image URL
+  role      String   @default("CUSTOMER") // CUSTOMER, PROVIDER, ADMIN
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  tasks        Task[]     @relation("UserTasks")
+  assignedTasks Task[]    @relation("AssignedTasks")
+  responses    Response[]
+  subscription Subscription?
+  
+  // Chat & Reviews
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  reviewsGiven     Review[]  @relation("ReviewsGiven")
+  reviewsReceived  Review[]  @relation("ReviewsReceived")
+  
+  // Password Reset
+  passwordResets   PasswordReset[]
+  
+  // Notifications
+  notifications    Notification[]
+}
+
+// Task Model
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  category    String     @default("Other")
+  subcategory String?    // Subcategory field
+  budgetType  String     // 'fixed' or 'negotiable'
+  budgetAmount String?
+  city        String
+  address     String?
+  images      String?    // JSON array of image URLs
+  urgency     String     @default("normal") // low, normal, urgent
+  dueDate     DateTime?  // Optional deadline
+  status      String     @default("OPEN") // OPEN, IN_PROGRESS, COMPLETED, CANCELLED
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relationships
+  userId    String
+  user      User       @relation("UserTasks", fields: [userId], references: [id])
+  responses Response[]
+
+  // Assignment
+  assignedUserId String?
+  assignedUser   User?   @relation("AssignedTasks", fields: [assignedUserId], references: [id])
+  
+  // Chat & Reviews
+  messages Message[]
+  review   Review?
+}
+
+// Response Model (Offers from Providers)
+model Response {
+  id            String   @id @default(cuid())
+  message       String
+  price         String
+  estimatedTime String?  // Estimated completion time (e.g., "2 hours", "1 day")
+  status        String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// Subscription Model (for Providers)
+model Subscription {
+  id        String   @id @default(cuid())
+  plan      String   // 'basic', 'standard', 'premium'
+  startDate DateTime @default(now())
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+
+  // Relationships
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// Message Model (Chat)
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  imageUrl  String?  // Optional image attachment
+  createdAt DateTime @default(now())
+  isRead    Boolean  @default(false)
+
+  // Sender
+  senderId   String
+  sender     User   @relation("SentMessages", fields: [senderId], references: [id])
+  
+  // Receiver
+  receiverId String
+  receiver   User   @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  
+  // Task context (optional - messages related to a task)
+  taskId    String?
+  task      Task?   @relation(fields: [taskId], references: [id])
+}
+
+// Password Reset Token Model
+model PasswordReset {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // User
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// Review Model (Ratings)
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now())
+
+  // Reviewer (Customer who leaves the review)
+  reviewerId String
+  reviewer   User   @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+  
+  // Reviewed (Provider who receives the review)
+  reviewedId String
+  reviewed   User   @relation("ReviewsReceived", fields: [reviewedId], references: [id])
+  
+
+  // Task the review is for
+  taskId    String  @unique
+  task      Task    @relation(fields: [taskId], references: [id])
+}
+
+// Notification Model
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // 'TASK_UPDATE', 'NEW_MESSAGE', 'NEW_OFFER', 'OFFER_ACCEPTED', 'SYSTEM'
+  title     String
+  message   String
+  link      String?  // URL to redirect to
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Recipient
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}

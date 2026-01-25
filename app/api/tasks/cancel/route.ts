@@ -1,0 +1,64 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { verifyJWT } from '@/lib/auth';
+import { cookies } from 'next/headers';
+
+// POST - Cancel a task
+export async function POST(request: Request) {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get('token')?.value;
+
+        if (!token) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const payload = await verifyJWT(token);
+        if (!payload || !payload.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const userId = payload.id as string;
+        const body = await request.json();
+        const { taskId } = body;
+
+        if (!taskId) {
+            return NextResponse.json({ error: 'Task ID is required' }, { status: 400 });
+        }
+
+        // Get the task
+        const task = await prisma.task.findUnique({
+            where: { id: taskId }
+        });
+
+        if (!task) {
+            return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+        }
+
+        // Verify the user is the task owner
+        if (task.userId !== userId) {
+            return NextResponse.json({ error: 'Only task owner can cancel' }, { status: 403 });
+        }
+
+        // Can only cancel OPEN tasks (not in progress or completed)
+        if (task.status !== 'OPEN') {
+            return NextResponse.json({
+                error: 'Only open tasks can be cancelled. Tasks in progress or completed cannot be cancelled.'
+            }, { status: 400 });
+        }
+
+        // Update task status
+        await prisma.task.update({
+            where: { id: taskId },
+            data: { status: 'CANCELLED' }
+        });
+
+        return NextResponse.json({
+            message: 'Task cancelled successfully'
+        });
+
+    } catch (error) {
+        console.error('Cancel Task Error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
