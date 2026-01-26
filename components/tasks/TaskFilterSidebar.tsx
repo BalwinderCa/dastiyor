@@ -139,7 +139,9 @@ export default function TaskFilterSidebar() {
             position: 'sticky',
             top: '100px',
             opacity: isPending ? 0.7 : 1,
-            transition: 'opacity 0.2s'
+            transition: 'opacity 0.2s',
+            width: '100%',
+            boxSizing: 'border-box'
         }}>
             {/* Clear Filters Button */}
             {hasActiveFilters && (
@@ -237,7 +239,13 @@ export default function TaskFilterSidebar() {
                 <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#111827', marginBottom: '12px' }}>
                     Бюджет (сомони)
                 </h4>
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                <div style={{ 
+                    display: 'flex', 
+                    gap: '8px', 
+                    marginBottom: '12px',
+                    width: '100%',
+                    boxSizing: 'border-box'
+                }}>
                     <input
                         type="number"
                         placeholder="От"
@@ -245,11 +253,14 @@ export default function TaskFilterSidebar() {
                         onChange={(e) => setMinBudget(e.target.value)}
                         style={{
                             flex: 1,
+                            minWidth: 0,
+                            width: '50%',
                             padding: '10px',
                             border: '1px solid #E5E7EB',
                             borderRadius: '8px',
                             fontSize: '0.9rem',
-                            outline: 'none'
+                            outline: 'none',
+                            boxSizing: 'border-box'
                         }}
                     />
                     <input
@@ -259,11 +270,14 @@ export default function TaskFilterSidebar() {
                         onChange={(e) => setMaxBudget(e.target.value)}
                         style={{
                             flex: 1,
+                            minWidth: 0,
+                            width: '50%',
                             padding: '10px',
                             border: '1px solid #E5E7EB',
                             borderRadius: '8px',
                             fontSize: '0.9rem',
-                            outline: 'none'
+                            outline: 'none',
+                            boxSizing: 'border-box'
                         }}
                     />
                 </div>

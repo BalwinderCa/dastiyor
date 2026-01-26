@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import TaskCard from '@/components/tasks/TaskCard';
 import TaskFilterSidebar from '@/components/tasks/TaskFilterSidebar';
+import TaskSortSelect from '@/components/tasks/TaskSortSelect';
 import Pagination from '@/components/ui/Pagination';
 import { Suspense } from 'react';
 
@@ -244,29 +245,7 @@ export default async function TasksPage({ searchParams }: Props) {
                                     </span>
                                 )}
                             </span>
-                            <form>
-                                <select
-                                    name="sort"
-                                    defaultValue={sort || 'newest'}
-                                    onChange={(e) => {
-                                        const url = new URL(window.location.href);
-                                        url.searchParams.set('sort', e.target.value);
-                                        window.location.href = url.toString();
-                                    }}
-                                    style={{
-                                        padding: '10px 16px',
-                                        borderRadius: '8px',
-                                        border: '1px solid var(--border)',
-                                        backgroundColor: '#F9FAFB',
-                                        fontWeight: '500',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    <option value="newest">Сначала новые</option>
-                                    <option value="budget-high">Цена: по убыванию</option>
-                                    <option value="budget-low">Цена: по возрастанию</option>
-                                </select>
-                            </form>
+                            <TaskSortSelect defaultValue={sort || 'newest'} />
                         </div>
 
                         {sortedTasks.length === 0 ? (
@@ -294,24 +273,9 @@ export default async function TasksPage({ searchParams }: Props) {
                                     );
                                     
                                     return (
-                                        <div key={task.id} style={{ position: 'relative' }}>
-                                            {hasPremiumResponse && (
-                                                <div style={{
-                                                    position: 'absolute',
-                                                    top: '8px',
-                                                    right: '8px',
-                                                    backgroundColor: '#F59E0B',
-                                                    color: 'white',
-                                                    padding: '4px 8px',
-                                                    borderRadius: '4px',
-                                                    fontSize: '0.75rem',
-                                                    fontWeight: '600',
-                                                    zIndex: 10
-                                                }}>
-                                                    ⭐ Premium
-                                                </div>
-                                            )}
-                                            <TaskCard task={{
+                                        <TaskCard 
+                                            key={task.id}
+                                            task={{
                                                 id: task.id,
                                                 title: task.title,
                                                 category: task.category,
@@ -320,9 +284,11 @@ export default async function TasksPage({ searchParams }: Props) {
                                                 postedAt: new Date(task.createdAt).toLocaleDateString('ru-RU'),
                                                 description: task.description,
                                                 urgency: task.urgency,
-                                                responseCount: task._count.responses
-                                            }} />
-                                        </div>
+                                                responseCount: task._count.responses,
+                                                status: task.status,
+                                                hasPremiumResponse
+                                            }} 
+                                        />
                                     );
                                 })}
                             </div>

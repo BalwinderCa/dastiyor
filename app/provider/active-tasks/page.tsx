@@ -3,7 +3,7 @@ import { verifyJWT } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Clock, MapPin, DollarSign, User } from 'lucide-react';
+import { Clock, MapPin, DollarSign, User, MessageSquare, Briefcase } from 'lucide-react';
 
 export default async function ActiveTasksPage() {
     const cookieStore = await cookies();
@@ -42,116 +42,163 @@ export default async function ActiveTasksPage() {
         }
     });
 
+    const accentColor = '#0D9488';
+    const accentColorLight = '#CCFBF1';
+
     return (
-        <div style={{ backgroundColor: 'var(--secondary)', minHeight: '100vh', padding: '40px 0' }}>
-            <div className="container" style={{ maxWidth: '1200px' }}>
-                <div style={{ marginBottom: '32px' }}>
-                    <h1 className="heading-lg">Активные задания</h1>
-                    <p style={{ color: 'var(--text-light)', marginTop: '8px' }}>
-                        Задания, над которыми вы сейчас работаете
-                    </p>
-                </div>
+        <>
+            {/* Page Header */}
+            <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1E293B', marginBottom: '6px' }}>
+                    Active Tasks
+                </h1>
+                <p style={{ color: '#64748B', fontSize: '0.9rem' }}>
+                    Tasks you&apos;re currently working on
+                </p>
+            </div>
 
-                {/* Stats */}
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)', marginBottom: '32px' }}>
-                    <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px' }}>{activeTasks.length}</div>
-                    <div style={{ color: 'var(--text-light)' }}>Активных заданий</div>
+            {/* Stats */}
+            <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '12px',
+                    backgroundColor: accentColorLight,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <Briefcase size={22} color={accentColor} />
                 </div>
+                <div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1E293B' }}>{activeTasks.length}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Active Tasks</div>
+                </div>
+            </div>
 
-                {/* Tasks List */}
-                <div style={{ display: 'grid', gap: '16px' }}>
-                    {activeTasks.length === 0 ? (
-                        <div style={{ backgroundColor: 'white', padding: '60px', borderRadius: '16px', border: '1px solid var(--border)', textAlign: 'center' }}>
-                            <div style={{ fontSize: '4rem', marginBottom: '16px' }}>📋</div>
-                            <h3 className="heading-md" style={{ marginBottom: '8px' }}>Нет активных заданий</h3>
-                            <p style={{ color: 'var(--text-light)', marginBottom: '24px' }}>
-                                Когда заказчики примут ваши отклики, задания появятся здесь
-                            </p>
-                            <Link href="/tasks" className="btn btn-primary">
-                                Найти задания
-                            </Link>
-                        </div>
-                    ) : (
-                        activeTasks.map((task) => (
-                            <div
-                                key={task.id}
-                                style={{
-                                    backgroundColor: 'white',
-                                    padding: '24px',
-                                    borderRadius: '16px',
-                                    border: '1px solid var(--border)',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    gap: '24px'
-                                }}
-                            >
+            {/* Tasks List */}
+            <div style={{ display: 'grid', gap: '16px' }}>
+                {activeTasks.length === 0 ? (
+                    <div style={{ backgroundColor: 'white', padding: '60px', borderRadius: '16px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📋</div>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1E293B', marginBottom: '8px' }}>No active tasks</h3>
+                        <p style={{ color: '#64748B', marginBottom: '20px', fontSize: '0.9rem' }}>
+                            When clients accept your responses, tasks will appear here
+                        </p>
+                        <Link href="/tasks" style={{
+                            display: 'inline-block',
+                            padding: '10px 20px',
+                            backgroundColor: accentColor,
+                            color: 'white',
+                            borderRadius: '8px',
+                            textDecoration: 'none',
+                            fontWeight: '600',
+                            fontSize: '0.9rem'
+                        }}>
+                            Find Tasks
+                        </Link>
+                    </div>
+                ) : (
+                    activeTasks.map((task) => (
+                        <div
+                            key={task.id}
+                            style={{
+                                backgroundColor: 'white',
+                                padding: '20px',
+                                borderRadius: '16px',
+                                border: '1px solid #E2E8F0'
+                            }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '20px' }}>
                                 <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px', flexWrap: 'wrap' }}>
                                         <Link
                                             href={`/tasks/${task.id}`}
-                                            style={{ fontSize: '1.2rem', fontWeight: '600', color: 'var(--primary)', textDecoration: 'none' }}
+                                            style={{ fontSize: '1rem', fontWeight: '600', color: '#1E293B', textDecoration: 'none' }}
                                         >
                                             {task.title}
                                         </Link>
                                         <span style={{
-                                            backgroundColor: '#DBEAFE',
-                                            color: '#1E40AF',
-                                            padding: '4px 12px',
-                                            borderRadius: '12px',
-                                            fontSize: '0.85rem',
+                                            backgroundColor: accentColorLight,
+                                            color: accentColor,
+                                            padding: '4px 10px',
+                                            borderRadius: '6px',
+                                            fontSize: '0.75rem',
                                             fontWeight: '600'
                                         }}>
-                                            В работе
+                                            In Progress
                                         </span>
                                     </div>
 
-                                    <p style={{ color: 'var(--text)', marginBottom: '16px', lineHeight: '1.6' }}>
-                                        {task.description.substring(0, 200)}{task.description.length > 200 ? '...' : ''}
+                                    <p style={{ color: '#475569', marginBottom: '12px', lineHeight: '1.5', fontSize: '0.9rem' }}>
+                                        {task.description.substring(0, 150)}{task.description.length > 150 ? '...' : ''}
                                     </p>
 
-                                    <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '0.9rem', color: 'var(--text-light)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <DollarSign size={16} />
-                                            <span style={{ fontWeight: '600', color: 'var(--text)' }}>
-                                                {task.budgetType === 'fixed' ? `${task.budgetAmount} с.` : 'Договорная'}
+                                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '0.8rem', color: '#64748B' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <DollarSign size={14} />
+                                            <span style={{ fontWeight: '600', color: accentColor }}>
+                                                {task.budgetType === 'fixed' ? `${task.budgetAmount} с.` : 'Negotiable'}
                                             </span>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <MapPin size={16} />
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <MapPin size={14} />
                                             <span>{task.city}</span>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <User size={16} />
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <User size={14} />
                                             <span>{task.user.fullName}</span>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <Clock size={16} />
-                                            <span>Начато: {new Date(task.updatedAt).toLocaleDateString('ru-RU')}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Clock size={14} />
+                                            <span>Started: {new Date(task.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     <Link
                                         href={`/tasks/${task.id}`}
-                                        className="btn btn-primary"
-                                        style={{ fontSize: '0.9rem', padding: '8px 16px' }}
+                                        style={{
+                                            padding: '8px 14px',
+                                            backgroundColor: accentColor,
+                                            color: 'white',
+                                            borderRadius: '6px',
+                                            textDecoration: 'none',
+                                            fontSize: '0.8rem',
+                                            fontWeight: '600',
+                                            textAlign: 'center'
+                                        }}
                                     >
-                                        Открыть задание
+                                        Open Task
                                     </Link>
                                     <Link
                                         href={`/messages?userId=${task.userId}&taskId=${task.id}`}
-                                        className="btn btn-outline"
-                                        style={{ fontSize: '0.9rem', padding: '8px 16px' }}
+                                        style={{
+                                            padding: '8px 14px',
+                                            backgroundColor: 'white',
+                                            color: '#475569',
+                                            borderRadius: '6px',
+                                            textDecoration: 'none',
+                                            fontSize: '0.8rem',
+                                            fontWeight: '600',
+                                            border: '1px solid #E2E8F0',
+                                            textAlign: 'center',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px',
+                                            justifyContent: 'center'
+                                        }}
                                     >
-                                        💬 Чат ({task._count.messages})
+                                        <MessageSquare size={14} />
+                                        Chat ({task._count.messages})
                                     </Link>
                                 </div>
                             </div>
-                        ))
-                    )}
-                </div>
+                        </div>
+                    ))
+                )}
             </div>
-        </div>
+        </>
     );
 }

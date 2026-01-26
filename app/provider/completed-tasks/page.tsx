@@ -54,105 +54,116 @@ export default async function CompletedTasksPage() {
             .reduce((sum, t) => sum + (t.review?.rating || 0), 0) / completedTasks.filter(t => t.review).length || 0
     };
 
+    const accentColor = '#0D9488';
+
     return (
-        <div style={{ backgroundColor: 'var(--secondary)', minHeight: '100vh', padding: '40px 0' }}>
-            <div className="container" style={{ maxWidth: '1200px' }}>
-                <div style={{ marginBottom: '32px' }}>
-                    <h1 className="heading-lg">Выполненные задания</h1>
-                    <p style={{ color: 'var(--text-light)', marginTop: '8px' }}>
-                        История всех успешно выполненных заданий
-                    </p>
-                </div>
+        <>
+            {/* Page Header */}
+            <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1E293B', marginBottom: '6px' }}>
+                    Completed Tasks
+                </h1>
+                <p style={{ color: '#64748B', fontSize: '0.9rem' }}>
+                    History of all successfully completed tasks
+                </p>
+            </div>
 
-                {/* Stats Cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px' }}>
-                    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px' }}>{stats.total}</div>
-                        <div style={{ color: 'var(--text-light)' }}>Выполнено заданий</div>
-                    </div>
-                    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px', color: '#10B981' }}>{stats.withReviews}</div>
-                        <div style={{ color: 'var(--text-light)' }}>С отзывами</div>
-                    </div>
-                    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px', color: '#F59E0B' }}>
-                            {stats.averageRating > 0 ? stats.averageRating.toFixed(1) : '0.0'}
-                        </div>
-                        <div style={{ color: 'var(--text-light)' }}>Средний рейтинг</div>
-                    </div>
+            {/* Stats Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '1.75rem', fontWeight: '700', color: '#1E293B', marginBottom: '4px' }}>{stats.total}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Tasks Completed</div>
                 </div>
+                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '1.75rem', fontWeight: '700', color: '#10B981', marginBottom: '4px' }}>{stats.withReviews}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>With Reviews</div>
+                </div>
+                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '1.75rem', fontWeight: '700', color: '#F59E0B', marginBottom: '4px' }}>
+                        {stats.averageRating > 0 ? stats.averageRating.toFixed(1) : '0.0'}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Avg Rating</div>
+                </div>
+            </div>
 
-                {/* Tasks List */}
-                <div style={{ display: 'grid', gap: '16px' }}>
-                    {completedTasks.length === 0 ? (
-                        <div style={{ backgroundColor: 'white', padding: '60px', borderRadius: '16px', border: '1px solid var(--border)', textAlign: 'center' }}>
-                            <div style={{ fontSize: '4rem', marginBottom: '16px' }}>✅</div>
-                            <h3 className="heading-md" style={{ marginBottom: '8px' }}>Нет выполненных заданий</h3>
-                            <p style={{ color: 'var(--text-light)', marginBottom: '24px' }}>
-                                Завершенные задания будут отображаться здесь
-                            </p>
-                            <Link href="/tasks" className="btn btn-primary">
-                                Найти задания
-                            </Link>
-                        </div>
-                    ) : (
-                        completedTasks.map((task) => (
-                            <div
-                                key={task.id}
-                                style={{
-                                    backgroundColor: 'white',
-                                    padding: '24px',
-                                    borderRadius: '16px',
-                                    border: '1px solid var(--border)',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    gap: '24px'
-                                }}
-                            >
+            {/* Tasks List */}
+            <div style={{ display: 'grid', gap: '16px' }}>
+                {completedTasks.length === 0 ? (
+                    <div style={{ backgroundColor: 'white', padding: '60px', borderRadius: '16px', border: '1px solid #E2E8F0', textAlign: 'center' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '16px' }}>✅</div>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1E293B', marginBottom: '8px' }}>No completed tasks</h3>
+                        <p style={{ color: '#64748B', marginBottom: '20px', fontSize: '0.9rem' }}>
+                            Completed tasks will appear here
+                        </p>
+                        <Link href="/tasks" style={{
+                            display: 'inline-block',
+                            padding: '10px 20px',
+                            backgroundColor: accentColor,
+                            color: 'white',
+                            borderRadius: '8px',
+                            textDecoration: 'none',
+                            fontWeight: '600',
+                            fontSize: '0.9rem'
+                        }}>
+                            Find Tasks
+                        </Link>
+                    </div>
+                ) : (
+                    completedTasks.map((task) => (
+                        <div
+                            key={task.id}
+                            style={{
+                                backgroundColor: 'white',
+                                padding: '20px',
+                                borderRadius: '16px',
+                                border: '1px solid #E2E8F0'
+                            }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '20px' }}>
                                 <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px', flexWrap: 'wrap' }}>
                                         <Link
                                             href={`/tasks/${task.id}`}
-                                            style={{ fontSize: '1.2rem', fontWeight: '600', color: 'var(--primary)', textDecoration: 'none' }}
+                                            style={{ fontSize: '1rem', fontWeight: '600', color: '#1E293B', textDecoration: 'none' }}
                                         >
                                             {task.title}
                                         </Link>
                                         <span style={{
                                             backgroundColor: '#D1FAE5',
                                             color: '#166534',
-                                            padding: '4px 12px',
-                                            borderRadius: '12px',
-                                            fontSize: '0.85rem',
+                                            padding: '4px 10px',
+                                            borderRadius: '6px',
+                                            fontSize: '0.75rem',
                                             fontWeight: '600',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '6px'
+                                            gap: '4px'
                                         }}>
-                                            <CheckCircle size={16} />
-                                            Выполнено
+                                            <CheckCircle size={14} />
+                                            Completed
                                         </span>
                                     </div>
 
-                                    <p style={{ color: 'var(--text)', marginBottom: '16px', lineHeight: '1.6' }}>
-                                        {task.description.substring(0, 200)}{task.description.length > 200 ? '...' : ''}
+                                    <p style={{ color: '#475569', marginBottom: '12px', lineHeight: '1.5', fontSize: '0.9rem' }}>
+                                        {task.description.substring(0, 150)}{task.description.length > 150 ? '...' : ''}
                                     </p>
 
-                                    <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '0.9rem', color: 'var(--text-light)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <DollarSign size={16} />
-                                            <span style={{ fontWeight: '600', color: 'var(--text)' }}>
-                                                {task.budgetType === 'fixed' ? `${task.budgetAmount} с.` : 'Договорная'}
+                                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '0.8rem', color: '#64748B' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <DollarSign size={14} />
+                                            <span style={{ fontWeight: '600', color: accentColor }}>
+                                                {task.budgetType === 'fixed' ? `${task.budgetAmount} с.` : 'Negotiable'}
                                             </span>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <Calendar size={16} />
-                                            <span>Завершено: {new Date(task.updatedAt).toLocaleDateString('ru-RU')}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Calendar size={14} />
+                                            <span>Completed: {new Date(task.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                                         </div>
                                         {task.review && (
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                <Star size={16} color="#F59E0B" fill="#F59E0B" />
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <Star size={14} color="#F59E0B" fill="#F59E0B" />
                                                 <span style={{ fontWeight: '600', color: '#F59E0B' }}>
-                                                    {task.review.rating} ⭐ от {task.review.reviewer.fullName}
+                                                    {task.review.rating} from {task.review.reviewer.fullName}
                                                 </span>
                                             </div>
                                         )}
@@ -160,43 +171,60 @@ export default async function CompletedTasksPage() {
 
                                     {task.review && task.review.comment && (
                                         <div style={{
-                                            marginTop: '16px',
-                                            padding: '16px',
+                                            marginTop: '12px',
+                                            padding: '12px',
                                             backgroundColor: '#FEF3C7',
-                                            borderRadius: '12px',
+                                            borderRadius: '8px',
                                             border: '1px solid #FDE68A'
                                         }}>
-                                            <div style={{ fontWeight: '600', marginBottom: '4px', color: '#92400E' }}>
-                                                Отзыв от {task.review.reviewer.fullName}:
+                                            <div style={{ fontWeight: '600', marginBottom: '4px', color: '#92400E', fontSize: '0.8rem' }}>
+                                                Review from {task.review.reviewer.fullName}:
                                             </div>
-                                            <p style={{ color: '#78350F', lineHeight: '1.6' }}>{task.review.comment}</p>
+                                            <p style={{ color: '#78350F', lineHeight: '1.5', fontSize: '0.85rem' }}>{task.review.comment}</p>
                                         </div>
                                     )}
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     <Link
                                         href={`/tasks/${task.id}`}
-                                        className="btn btn-outline"
-                                        style={{ fontSize: '0.9rem', padding: '8px 16px' }}
+                                        style={{
+                                            padding: '8px 14px',
+                                            backgroundColor: 'white',
+                                            color: '#475569',
+                                            borderRadius: '6px',
+                                            textDecoration: 'none',
+                                            fontSize: '0.8rem',
+                                            fontWeight: '600',
+                                            border: '1px solid #E2E8F0',
+                                            textAlign: 'center'
+                                        }}
                                     >
-                                        Посмотреть задание
+                                        View Task
                                     </Link>
                                     {task.review && (
                                         <Link
                                             href={`/reviews/${task.id}`}
-                                            className="btn"
-                                            style={{ fontSize: '0.9rem', padding: '8px 16px', backgroundColor: '#F59E0B', color: 'white' }}
+                                            style={{
+                                                padding: '8px 14px',
+                                                backgroundColor: '#F59E0B',
+                                                color: 'white',
+                                                borderRadius: '6px',
+                                                textDecoration: 'none',
+                                                fontSize: '0.8rem',
+                                                fontWeight: '600',
+                                                textAlign: 'center'
+                                            }}
                                         >
-                                            📝 Отзыв
+                                            View Review
                                         </Link>
                                     )}
                                 </div>
                             </div>
-                        ))
-                    )}
-                </div>
+                        </div>
+                    ))
+                )}
             </div>
-        </div>
+        </>
     );
 }

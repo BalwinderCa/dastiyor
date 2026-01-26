@@ -3,7 +3,7 @@ import { verifyJWT } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle, XCircle, Clock, DollarSign } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, DollarSign, MapPin, Calendar, MessageSquare } from 'lucide-react';
 
 export default async function MyResponsesPage() {
     const cookieStore = await cookies();
@@ -50,168 +50,182 @@ export default async function MyResponsesPage() {
         rejected: responses.filter(r => r.status === 'REJECTED').length,
     };
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'ACCEPTED':
-                return <CheckCircle size={20} color="#10B981" />;
-            case 'REJECTED':
-                return <XCircle size={20} color="#EF4444" />;
-            default:
-                return <Clock size={20} color="#F59E0B" />;
-        }
-    };
+    const accentColor = '#0D9488';
 
-    const getStatusLabel = (status: string) => {
+    const getStatusInfo = (status: string) => {
         switch (status) {
             case 'ACCEPTED':
-                return { text: 'Принято', color: '#10B981', bg: '#D1FAE5' };
+                return { text: 'Accepted', color: '#10B981', bg: '#D1FAE5', icon: <CheckCircle size={16} color="#10B981" /> };
             case 'REJECTED':
-                return { text: 'Отклонено', color: '#EF4444', bg: '#FEE2E2' };
+                return { text: 'Rejected', color: '#EF4444', bg: '#FEE2E2', icon: <XCircle size={16} color="#EF4444" /> };
             default:
-                return { text: 'Ожидает', color: '#F59E0B', bg: '#FEF3C7' };
+                return { text: 'Pending', color: '#F59E0B', bg: '#FEF3C7', icon: <Clock size={16} color="#F59E0B" /> };
         }
     };
 
     return (
-        <div style={{ backgroundColor: 'var(--secondary)', minHeight: '100vh', padding: '40px 0' }}>
-            <div className="container" style={{ maxWidth: '1200px' }}>
-                <div style={{ marginBottom: '32px' }}>
-                    <h1 className="heading-lg">Мои отклики</h1>
-                    <p style={{ color: 'var(--text-light)', marginTop: '8px' }}>
-                        Управляйте всеми вашими откликами на задания
-                    </p>
+        <>
+            {/* Page Header */}
+            <div style={{ marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1E293B', marginBottom: '6px' }}>
+                    My Responses
+                </h1>
+                <p style={{ color: '#64748B', fontSize: '0.9rem' }}>
+                    Track and manage all your task responses
+                </p>
+            </div>
+
+            {/* Stats Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '1.75rem', fontWeight: '700', color: '#1E293B', marginBottom: '4px' }}>{stats.total}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Total Responses</div>
                 </div>
-
-                {/* Stats Cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
-                    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px' }}>{stats.total}</div>
-                        <div style={{ color: 'var(--text-light)' }}>Всего откликов</div>
-                    </div>
-                    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px', color: '#F59E0B' }}>{stats.pending}</div>
-                        <div style={{ color: 'var(--text-light)' }}>Ожидают</div>
-                    </div>
-                    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px', color: '#10B981' }}>{stats.accepted}</div>
-                        <div style={{ color: 'var(--text-light)' }}>Принято</div>
-                    </div>
-                    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                        <div style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '8px', color: '#EF4444' }}>{stats.rejected}</div>
-                        <div style={{ color: 'var(--text-light)' }}>Отклонено</div>
-                    </div>
+                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '1.75rem', fontWeight: '700', color: '#F59E0B', marginBottom: '4px' }}>{stats.pending}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Pending</div>
                 </div>
-
-                {/* Responses List */}
-                <div style={{ backgroundColor: 'white', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden' }}>
-                    {responses.length === 0 ? (
-                        <div style={{ padding: '60px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '4rem', marginBottom: '16px' }}>📝</div>
-                            <h3 className="heading-md" style={{ marginBottom: '8px' }}>Нет откликов</h3>
-                            <p style={{ color: 'var(--text-light)', marginBottom: '24px' }}>
-                                Начните отвечать на задания, чтобы увидеть их здесь
-                            </p>
-                            <Link href="/tasks" className="btn btn-primary">
-                                Найти задания
-                            </Link>
-                        </div>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            {responses.map((response) => {
-                                const statusInfo = getStatusLabel(response.status);
-                                return (
-                                    <div
-                                        key={response.id}
-                                        style={{
-                                            padding: '24px',
-                                            borderBottom: '1px solid var(--border)',
-                                            transition: 'background-color 0.2s'
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.backgroundColor = '#F9FAFB';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.backgroundColor = 'transparent';
-                                        }}
-                                    >
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '24px' }}>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                                                    <Link
-                                                        href={`/tasks/${response.taskId}`}
-                                                        style={{ fontSize: '1.2rem', fontWeight: '600', color: 'var(--primary)', textDecoration: 'none' }}
-                                                    >
-                                                        {response.task.title}
-                                                    </Link>
-                                                    <span style={{
-                                                        backgroundColor: statusInfo.bg,
-                                                        color: statusInfo.color,
-                                                        padding: '4px 12px',
-                                                        borderRadius: '12px',
-                                                        fontSize: '0.85rem',
-                                                        fontWeight: '600',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px'
-                                                    }}>
-                                                        {getStatusIcon(response.status)}
-                                                        {statusInfo.text}
-                                                    </span>
-                                                </div>
-
-                                                <p style={{ color: 'var(--text)', marginBottom: '16px', lineHeight: '1.6' }}>
-                                                    {response.message}
-                                                </p>
-
-                                                <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', fontSize: '0.9rem', color: 'var(--text-light)' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                        <DollarSign size={16} />
-                                                        <span style={{ fontWeight: '600', color: 'var(--text)' }}>{response.price} с.</span>
-                                                    </div>
-                                                    {response.estimatedTime && (
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                            <Clock size={16} />
-                                                            <span>{response.estimatedTime}</span>
-                                                        </div>
-                                                    )}
-                                                    <div>
-                                                        📍 {response.task.city}
-                                                    </div>
-                                                    <div>
-                                                        📅 {new Date(response.createdAt).toLocaleDateString('ru-RU')}
-                                                    </div>
-                                                    <div>
-                                                        💬 {response.task._count.responses} откликов
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
-                                                <Link
-                                                    href={`/tasks/${response.taskId}`}
-                                                    className="btn btn-outline"
-                                                    style={{ fontSize: '0.9rem', padding: '8px 16px' }}
-                                                >
-                                                    Посмотреть задание
-                                                </Link>
-                                                {response.status === 'ACCEPTED' && (
-                                                    <Link
-                                                        href={`/messages?userId=${response.task.userId}&taskId=${response.taskId}`}
-                                                        className="btn"
-                                                        style={{ fontSize: '0.9rem', padding: '8px 16px', backgroundColor: '#3B82F6', color: 'white' }}
-                                                    >
-                                                        Написать заказчику
-                                                    </Link>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
+                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '1.75rem', fontWeight: '700', color: '#10B981', marginBottom: '4px' }}>{stats.accepted}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Accepted</div>
+                </div>
+                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                    <div style={{ fontSize: '1.75rem', fontWeight: '700', color: '#EF4444', marginBottom: '4px' }}>{stats.rejected}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Rejected</div>
                 </div>
             </div>
-        </div>
+
+            {/* Responses List */}
+            <div style={{ backgroundColor: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+                {responses.length === 0 ? (
+                    <div style={{ padding: '60px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📝</div>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#1E293B', marginBottom: '8px' }}>No responses yet</h3>
+                        <p style={{ color: '#64748B', marginBottom: '20px', fontSize: '0.9rem' }}>
+                            Start responding to tasks to see them here
+                        </p>
+                        <Link href="/tasks" style={{
+                            display: 'inline-block',
+                            padding: '10px 20px',
+                            backgroundColor: accentColor,
+                            color: 'white',
+                            borderRadius: '8px',
+                            textDecoration: 'none',
+                            fontWeight: '600',
+                            fontSize: '0.9rem'
+                        }}>
+                            Find Tasks
+                        </Link>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {responses.map((response) => {
+                            const statusInfo = getStatusInfo(response.status);
+                            return (
+                                <div
+                                    key={response.id}
+                                    style={{
+                                        padding: '20px',
+                                        borderBottom: '1px solid #E2E8F0'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '20px' }}>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                                                <Link
+                                                    href={`/tasks/${response.taskId}`}
+                                                    style={{ fontSize: '1rem', fontWeight: '600', color: '#1E293B', textDecoration: 'none' }}
+                                                >
+                                                    {response.task.title}
+                                                </Link>
+                                                <span style={{
+                                                    backgroundColor: statusInfo.bg,
+                                                    color: statusInfo.color,
+                                                    padding: '4px 10px',
+                                                    borderRadius: '6px',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: '600',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}>
+                                                    {statusInfo.icon}
+                                                    {statusInfo.text}
+                                                </span>
+                                            </div>
+
+                                            <p style={{ color: '#475569', marginBottom: '12px', lineHeight: '1.5', fontSize: '0.9rem' }}>
+                                                {response.message.length > 150 ? response.message.substring(0, 150) + '...' : response.message}
+                                            </p>
+
+                                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontSize: '0.8rem', color: '#64748B' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <DollarSign size={14} />
+                                                    <span style={{ fontWeight: '600', color: accentColor }}>{response.price} с.</span>
+                                                </div>
+                                                {response.estimatedTime && (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <Clock size={14} />
+                                                        <span>{response.estimatedTime}</span>
+                                                    </div>
+                                                )}
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <MapPin size={14} />
+                                                    <span>{response.task.city}</span>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <Calendar size={14} />
+                                                    <span>{new Date(response.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <MessageSquare size={14} />
+                                                    <span>{response.task._count.responses} responses</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            <Link
+                                                href={`/tasks/${response.taskId}`}
+                                                style={{
+                                                    padding: '8px 14px',
+                                                    backgroundColor: 'white',
+                                                    color: '#475569',
+                                                    borderRadius: '6px',
+                                                    textDecoration: 'none',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: '600',
+                                                    border: '1px solid #E2E8F0',
+                                                    textAlign: 'center'
+                                                }}
+                                            >
+                                                View Task
+                                            </Link>
+                                            {response.status === 'ACCEPTED' && (
+                                                <Link
+                                                    href={`/messages?userId=${response.task.userId}&taskId=${response.taskId}`}
+                                                    style={{
+                                                        padding: '8px 14px',
+                                                        backgroundColor: accentColor,
+                                                        color: 'white',
+                                                        borderRadius: '6px',
+                                                        textDecoration: 'none',
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: '600',
+                                                        textAlign: 'center'
+                                                    }}
+                                                >
+                                                    Message Client
+                                                </Link>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </>
     );
 }

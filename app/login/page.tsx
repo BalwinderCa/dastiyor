@@ -33,8 +33,9 @@ export default function LoginPage() {
                 throw new Error(json.error || 'Login failed');
             }
 
-            // Redirect on success
-            router.push('/');
+            // Use full page reload to ensure server components refresh
+            // This ensures the Header component re-renders with the new auth state
+            window.location.href = '/';
         } catch (err: any) {
             setError(err.message);
         } finally {

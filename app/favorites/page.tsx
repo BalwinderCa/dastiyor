@@ -80,7 +80,8 @@ export default async function FavoritesPage() {
                                     postedAt: new Date(fav.task.createdAt).toLocaleDateString('ru-RU'),
                                     description: fav.task.description,
                                     urgency: fav.task.urgency,
-                                    responseCount: fav.task._count.responses
+                                    responseCount: fav.task._count.responses,
+                                    status: fav.task.status
                                 }}
                             />
                         ))}

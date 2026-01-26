@@ -72,116 +72,120 @@ export default async function Header() {
                 </Link>
 
                 {/* Center Navigation */}
-                <nav style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+                <nav style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                     <Link href="/how-it-works" style={{
                         fontWeight: '500',
                         color: '#374151',
-                        fontSize: '0.95rem',
+                        fontSize: '0.9rem',
                         transition: 'color 0.2s',
+                        textDecoration: 'none',
+                        whiteSpace: 'nowrap'
                     }}>
                         Как это работает
                     </Link>
                     <Link href="/tasks" style={{
                         fontWeight: '500',
                         color: '#374151',
-                        fontSize: '0.95rem',
+                        fontSize: '0.9rem',
                         transition: 'color 0.2s',
+                        textDecoration: 'none',
+                        whiteSpace: 'nowrap'
                     }}>
                         Найти задания
                     </Link>
-                    <Link href="/register?type=provider" style={{
-                        fontWeight: '600',
-                        color: '#4F46E5', // Indigo-600
-                        fontSize: '0.95rem',
-                        borderBottom: '2px solid #4F46E5',
-                        paddingBottom: '2px'
-                    }}>
-                        Стать исполнителем
-                    </Link>
+                    {(!user || user.role !== 'PROVIDER') && (
+                        <Link href="/register?type=provider" style={{
+                            fontWeight: '600',
+                            color: '#4F46E5',
+                            fontSize: '0.9rem',
+                            borderBottom: '2px solid #4F46E5',
+                            paddingBottom: '2px',
+                            textDecoration: 'none',
+                            whiteSpace: 'nowrap'
+                        }}>
+                            Стать исполнителем
+                        </Link>
+                    )}
                 </nav>
 
                 {/* Right Actions */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    {user && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {user && user.role === 'CUSTOMER' && (
                         <Link href="/create-task/template" style={{
                             backgroundColor: '#F3F4F6',
                             color: '#374151',
-                            padding: '10px 20px',
+                            padding: '8px 16px',
                             borderRadius: '8px',
                             fontWeight: '600',
-                            fontSize: '0.9rem',
+                            fontSize: '0.85rem',
                             transition: 'background-color 0.2s',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            border: '1px solid #E5E7EB'
+                            border: '1px solid #E5E7EB',
+                            textDecoration: 'none',
+                            whiteSpace: 'nowrap'
                         }}>
                             Шаблоны
                         </Link>
                     )}
-                    <Link href="/create-task" style={{
-                        backgroundColor: '#6366F1', // Indigo-500
-                        color: 'white',
-                        padding: '10px 24px',
-                        borderRadius: '8px',
-                        fontWeight: '600',
-                        fontSize: '0.95rem',
-                        transition: 'background-color 0.2s',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
-                        Создать задание
-                    </Link>
+                    
+                    {(!user || user.role === 'CUSTOMER') && (
+                        <Link href="/create-task" style={{
+                            backgroundColor: '#6366F1',
+                            color: 'white',
+                            padding: '8px 20px',
+                            borderRadius: '8px',
+                            fontWeight: '600',
+                            fontSize: '0.85rem',
+                            transition: 'background-color 0.2s',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textDecoration: 'none',
+                            whiteSpace: 'nowrap'
+                        }}>
+                            Создать задание
+                        </Link>
+                    )}
 
                     {user ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             {user.role === 'PROVIDER' && (
-                                <Link href="/favorites" style={{
+                                <Link href="/favorites" className="favorites-link" style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '8px 16px',
+                                    justifyContent: 'center',
+                                    width: '40px',
+                                    height: '40px',
                                     borderRadius: '8px',
                                     color: '#6B7280',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '500',
                                     textDecoration: 'none',
-                                    transition: 'all 0.2s'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = '#F9FAFB';
-                                    e.currentTarget.style.color = '#EF4444';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'transparent';
-                                    e.currentTarget.style.color = '#6B7280';
-                                }}
-                                >
-                                    <Heart size={18} />
-                                    Избранное
+                                    border: '1px solid #E5E7EB'
+                                }} title="Избранное">
+                                    <Heart size={20} />
                                 </Link>
                             )}
                             <UserMenu user={user} />
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <Link href="/login" style={{
-                                backgroundColor: '#F3F4F6',
-                                color: '#111827',
-                                padding: '10px 24px',
-                                borderRadius: '8px',
-                                fontWeight: '600',
-                                fontSize: '0.95rem',
-                                border: '1px solid transparent',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                            }}>
-                                <LogIn size={18} />
-                                Войти
-                            </Link>
-                        </div>
+                        <Link href="/login" style={{
+                            backgroundColor: '#F3F4F6',
+                            color: '#111827',
+                            padding: '8px 20px',
+                            borderRadius: '8px',
+                            fontWeight: '600',
+                            fontSize: '0.85rem',
+                            border: '1px solid #E5E7EB',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            textDecoration: 'none',
+                            whiteSpace: 'nowrap'
+                        }}>
+                            <LogIn size={16} />
+                            Войти
+                        </Link>
                     )}
                 </div>
             </div>
