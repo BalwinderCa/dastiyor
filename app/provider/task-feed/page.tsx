@@ -28,7 +28,7 @@ export default async function TaskFeedPage() {
 
     // Get open tasks
     const tasks = await prisma.task.findMany({
-        where: { 
+        where: {
             status: 'OPEN',
             NOT: { userId: user.id }
         },
@@ -40,7 +40,7 @@ export default async function TaskFeedPage() {
         }
     });
 
-    const accentColor = '#0D9488';
+    const accentColor = 'var(--primary)';
 
     return (
         <>
@@ -79,7 +79,7 @@ export default async function TaskFeedPage() {
                                 <div style={{ flex: 1 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
                                         <Link
-                                            href={`/tasks/${task.id}`}
+                                            href={`/provider/tasks/${task.id}`}
                                             style={{ fontSize: '1rem', fontWeight: '600', color: '#1E293B', textDecoration: 'none' }}
                                         >
                                             {task.title}
@@ -123,7 +123,7 @@ export default async function TaskFeedPage() {
                                 </div>
 
                                 <Link
-                                    href={`/tasks/${task.id}`}
+                                    href={`/provider/tasks/${task.id}`}
                                     style={{
                                         padding: '10px 16px',
                                         backgroundColor: accentColor,

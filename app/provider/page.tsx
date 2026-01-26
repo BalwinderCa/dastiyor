@@ -3,7 +3,7 @@ import { verifyJWT } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { 
+import {
     Star,
     CheckCircle,
     DollarSign,
@@ -61,7 +61,7 @@ export default async function ProviderDashboard() {
             select: { status: true }
         }),
         prisma.task.findMany({
-            where: { 
+            where: {
                 status: 'OPEN',
                 NOT: { userId: user.id }
             },
@@ -84,8 +84,8 @@ export default async function ProviderDashboard() {
         rejected: responses.filter(r => r.status === 'REJECTED').length
     };
 
-    const accentColor = '#0D9488';
-    const accentColorLight = '#CCFBF1';
+    const accentColor = 'var(--primary)';
+    const accentColorLight = '#DBEAFE';
 
     return (
         <>
@@ -241,7 +241,7 @@ export default async function ProviderDashboard() {
                                     {activeTasks.map((task) => (
                                         <tr key={task.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
                                             <td style={{ padding: '14px 0' }}>
-                                                <Link href={`/tasks/${task.id}`} style={{ textDecoration: 'none' }}>
+                                                <Link href={`/provider/tasks/${task.id}`} style={{ textDecoration: 'none' }}>
                                                     <div style={{ fontWeight: '600', fontSize: '0.85rem', color: '#1E293B' }}>{task.title}</div>
                                                     <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{task.category}</div>
                                                 </Link>
@@ -402,9 +402,9 @@ export default async function ProviderDashboard() {
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <div style={{ fontSize: '0.85rem', fontWeight: '600', color: accentColor }}>
-                                                {task.budgetType === 'fixed' ? `$${task.budgetAmount} - $${(task.budgetAmount || 0) + 50}` : 'Negotiable'}
+                                                {task.budgetType === 'fixed' ? `$${task.budgetAmount} - $${Number(task.budgetAmount || 0) + 50}` : 'Negotiable'}
                                             </div>
-                                            <Link href={`/tasks/${task.id}`} style={{
+                                            <Link href={`/provider/tasks/${task.id}`} style={{
                                                 padding: '6px 12px',
                                                 backgroundColor: 'white',
                                                 color: '#475569',
@@ -422,7 +422,7 @@ export default async function ProviderDashboard() {
                             )}
                         </div>
 
-                        <Link href="/tasks" style={{
+                        <Link href="/provider/task-feed" style={{
                             display: 'block',
                             textAlign: 'center',
                             marginTop: '12px',
@@ -438,7 +438,7 @@ export default async function ProviderDashboard() {
                     {/* Boost Your Reach */}
                     {(!user.subscription || !user.subscription.isActive || user.subscription.plan !== 'premium') && (
                         <div style={{
-                            background: `linear-gradient(135deg, ${accentColor} 0%, #0F766E 100%)`,
+                            background: `linear-gradient(135deg, ${accentColor} 0%, #1D4ED8 100%)`,
                             padding: '20px',
                             borderRadius: '16px',
                             color: 'white'
@@ -452,7 +452,7 @@ export default async function ProviderDashboard() {
                             <p style={{ fontSize: '0.8rem', marginBottom: '14px', opacity: 0.9, lineHeight: '1.5' }}>
                                 Pro Plan members get 3x more visibility in client searches. Upgrade today to unlock premium features.
                             </p>
-                            <Link href="/subscription" style={{
+                            <Link href="/provider/subscription" style={{
                                 display: 'block',
                                 textAlign: 'center',
                                 padding: '10px 16px',

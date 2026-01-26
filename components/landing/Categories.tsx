@@ -4,7 +4,7 @@ import { Wrench, SprayCan, Truck, BookOpen, Droplets, Zap, Sparkles, Monitor } f
 
 export default function Categories() {
     return (
-        <section style={{ padding: '100px 0', backgroundColor: '#F9FAFB' }}>
+        <section style={{ padding: '100px 0', backgroundColor: 'var(--white)' }}>
             <div className="container">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '50px' }}>
                     <div>

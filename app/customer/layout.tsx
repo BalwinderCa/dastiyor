@@ -5,19 +5,15 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import {
     LayoutDashboard,
-    Wifi,
-    FileText,
-    User,
-    CreditCard,
     Search,
     Bell,
     Settings
 } from 'lucide-react';
-import ProviderSidebarNav from './ProviderSidebarNav';
+import CustomerSidebarNav from './CustomerSidebarNav';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ProviderLayout({
+export default async function CustomerLayout({
     children,
 }: {
     children: React.ReactNode;
@@ -35,23 +31,16 @@ export default async function ProviderLayout({
     }
 
     const user = await prisma.user.findUnique({
-        where: { id: payload.id as string },
-        include: {
-            subscription: true
-        }
+        where: { id: payload.id as string }
     });
 
-    if (!user || user.role !== 'PROVIDER') {
+    if (!user || user.role !== 'CUSTOMER') {
+        // If provider tries to access, redirect to provider dashboard
+        if (user?.role === 'PROVIDER') {
+            redirect('/provider');
+        }
         redirect('/access-denied');
     }
-
-    const daysLeft = user.subscription && user.subscription.isActive
-        ? Math.ceil((new Date(user.subscription.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
-        : 0;
-
-    const planName = user.subscription?.plan === 'premium' ? 'Premium' :
-        user.subscription?.plan === 'standard' ? 'Pro' :
-            user.subscription?.plan === 'basic' ? 'Basic' : 'Free';
 
     const accentColor = 'var(--primary)';
 
@@ -87,29 +76,12 @@ export default async function ProviderLayout({
                     </div>
                     <div>
                         <div style={{ fontWeight: '700', fontSize: '1.1rem', color: '#1E293B' }}>Dastiyor</div>
-                        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>Provider Portal</div>
+                        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>Customer Portal</div>
                     </div>
                 </Link>
 
-                {/* Navigation - Client Component for active state */}
-                <ProviderSidebarNav />
-
-                {/* Current Plan */}
-                <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
-                    {user.subscription && user.subscription.isActive && (
-                        <div style={{ marginBottom: '16px' }}>
-                            <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginBottom: '6px', fontWeight: '600', letterSpacing: '0.5px' }}>
-                                CURRENT PLAN
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                                <span style={{ fontWeight: '700', fontSize: '0.95rem', color: '#1E293B' }}>{planName} Plan</span>
-                                <span style={{ fontSize: '0.8rem', color: accentColor, fontWeight: '600' }}>{daysLeft} days left</span>
-                            </div>
-                        </div>
-                    )}
-
-
-                </div>
+                {/* Navigation */}
+                <CustomerSidebarNav />
             </aside>
 
             {/* Main Content */}
@@ -128,10 +100,11 @@ export default async function ProviderLayout({
                     zIndex: 40
                 }}>
                     <div style={{ flex: 1, maxWidth: '400px', position: 'relative' }}>
+                        {/* Search could be for finding services */}
                         <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
                         <input
                             type="text"
-                            placeholder="Search tasks, clients, or records..."
+                            placeholder="Find services..."
                             style={{
                                 width: '100%',
                                 padding: '10px 12px 10px 40px',
@@ -157,16 +130,16 @@ export default async function ProviderLayout({
                                 borderRadius: '50%'
                             }} />
                         </button>
-                        <Link href="/provider/profile" style={{ cursor: 'pointer', padding: '8px' }}>
+                        <Link href="/customer/profile" style={{ cursor: 'pointer', padding: '8px' }}>
                             <Settings size={20} color="#64748B" />
                         </Link>
-                        <Link href="/provider/profile" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
+                        <Link href="/customer/profile" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
                             <div style={{ textAlign: 'right' }}>
                                 <div style={{ fontWeight: '600', fontSize: '0.85rem', color: '#1E293B' }}>
                                     {user.fullName}
                                 </div>
                                 <div style={{ fontSize: '0.7rem', color: '#64748B' }}>
-                                    Top Rated Contractor
+                                    Customer
                                 </div>
                             </div>
                             <div style={{

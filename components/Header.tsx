@@ -129,9 +129,9 @@ export default async function Header() {
                             Шаблоны
                         </Link>
                     )}
-                    
+
                     {(!user || user.role === 'CUSTOMER') && (
-                        <Link href="/create-task" style={{
+                        <Link href={user ? "/customer/create-task" : "/create-task"} style={{
                             backgroundColor: '#6366F1',
                             color: 'white',
                             padding: '8px 20px',

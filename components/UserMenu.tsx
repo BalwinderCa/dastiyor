@@ -102,27 +102,27 @@ export default function UserMenu({ user }: UserMenuProps) {
                             <p style={{ fontWeight: '600', color: 'var(--text)' }}>{user.fullName}</p>
                         </div>
 
-{user.role === 'PROVIDER' ? (
+                        {user.role === 'PROVIDER' ? (
                             /* Provider Menu - All links go to dashboard */
                             <>
-                                <Link href="/provider" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: '#0D9488', fontSize: '0.95rem', fontWeight: '600', transition: 'background 0.2s', backgroundColor: '#CCFBF1' }} className="hover:bg-gray-100">
+                                <Link href="/provider" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--primary)', fontSize: '0.95rem', fontWeight: '600', transition: 'background 0.2s', backgroundColor: '#DBEAFE' }} className="hover:bg-gray-100">
                                     <LayoutDashboard size={18} /> Dashboard
                                 </Link>
                             </>
                         ) : (
                             /* Customer Menu */
                             <>
-                                <Link href="/profile" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
+                                <Link href="/customer" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--primary)', fontSize: '0.95rem', fontWeight: '600', transition: 'background 0.2s', backgroundColor: '#DBEAFE' }} className="hover:bg-gray-100">
+                                    <LayoutDashboard size={18} /> Dashboard
+                                </Link>
+                                <Link href="/customer/profile" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
                                     <User size={18} /> Profile
                                 </Link>
-                                <Link href="/my-tasks" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
+                                <Link href="/customer/my-tasks" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
                                     <ClipboardList size={18} /> My Tasks
                                 </Link>
-                                <Link href="/messages" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
+                                <Link href="/customer/messages" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
                                     <MessageSquare size={18} /> Messages
-                                </Link>
-                                <Link href="/subscription" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
-                                    <Star size={18} /> Subscription
                                 </Link>
                             </>
                         )}

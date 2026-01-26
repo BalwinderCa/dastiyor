@@ -13,12 +13,13 @@ type ConversationLinkProps = {
         lastMessageAt: Date;
         unreadCount: number;
     };
+    basePath?: string;
 };
 
-export default function ConversationLink({ conversation: conv }: ConversationLinkProps) {
+export default function ConversationLink({ conversation: conv, basePath }: ConversationLinkProps) {
     return (
         <Link
-            href={`/messages?userId=${conv.partnerId}${conv.taskId ? `&taskId=${conv.taskId}` : ''}`}
+            href={`${basePath || '/messages'}?userId=${conv.partnerId}${conv.taskId ? `&taskId=${conv.taskId}` : ''}`}
             style={{
                 display: 'block',
                 padding: '16px 20px',

@@ -50,7 +50,7 @@ export default async function MyResponsesPage() {
         rejected: responses.filter(r => r.status === 'REJECTED').length,
     };
 
-    const accentColor = '#0D9488';
+    const accentColor = 'var(--primary)';
 
     const getStatusInfo = (status: string) => {
         switch (status) {
@@ -104,7 +104,7 @@ export default async function MyResponsesPage() {
                         <p style={{ color: '#64748B', marginBottom: '20px', fontSize: '0.9rem' }}>
                             Start responding to tasks to see them here
                         </p>
-                        <Link href="/tasks" style={{
+                        <Link href="/provider/task-feed" style={{
                             display: 'inline-block',
                             padding: '10px 20px',
                             backgroundColor: accentColor,
@@ -133,7 +133,7 @@ export default async function MyResponsesPage() {
                                         <div style={{ flex: 1 }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px', flexWrap: 'wrap' }}>
                                                 <Link
-                                                    href={`/tasks/${response.taskId}`}
+                                                    href={`/provider/tasks/${response.taskId}`}
                                                     style={{ fontSize: '1rem', fontWeight: '600', color: '#1E293B', textDecoration: 'none' }}
                                                 >
                                                     {response.task.title}
@@ -186,7 +186,7 @@ export default async function MyResponsesPage() {
 
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                             <Link
-                                                href={`/tasks/${response.taskId}`}
+                                                href={`/provider/tasks/${response.taskId}`}
                                                 style={{
                                                     padding: '8px 14px',
                                                     backgroundColor: 'white',
@@ -203,7 +203,7 @@ export default async function MyResponsesPage() {
                                             </Link>
                                             {response.status === 'ACCEPTED' && (
                                                 <Link
-                                                    href={`/messages?userId=${response.task.userId}&taskId=${response.taskId}`}
+                                                    href={`/provider/messages?userId=${response.task.userId}&taskId=${response.taskId}`}
                                                     style={{
                                                         padding: '8px 14px',
                                                         backgroundColor: accentColor,

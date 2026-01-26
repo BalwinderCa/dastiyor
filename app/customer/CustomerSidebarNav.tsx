@@ -1,26 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
     LayoutDashboard,
-    Wifi,
-    FileText,
+    PlusCircle,
+    ClipboardList,
+    MessageSquare,
     User,
-    CreditCard,
     LogOut
 } from 'lucide-react';
 
-export default function ProviderSidebarNav() {
+export default function CustomerSidebarNav() {
     const router = useRouter();
     const pathname = usePathname();
     const accentColor = 'var(--primary)';
 
     const navItems = [
-        { href: '/provider', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-        { href: '/provider/my-responses', label: 'My Responses', icon: FileText },
-        { href: '/provider/profile', label: 'Profile', icon: User },
-        { href: '/provider/subscription', label: 'Subscription', icon: CreditCard },
+        { href: '/customer', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+        { href: '/customer/create-task', label: 'Create Task', icon: PlusCircle },
+        { href: '/customer/my-tasks', label: 'My Tasks', icon: ClipboardList },
+        { href: '/customer/messages', label: 'Messages', icon: MessageSquare },
+        { href: '/customer/profile', label: 'Profile', icon: User },
     ];
 
     const isActive = (href: string, exact?: boolean) => {

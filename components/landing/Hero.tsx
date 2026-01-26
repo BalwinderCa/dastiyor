@@ -6,22 +6,14 @@ export default function Hero() {
     return (
         <section style={{
             position: 'relative',
-            padding: '100px 0 140px',
+            padding: '120px 0 160px',
             overflow: 'hidden',
-            background: 'radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 50%)'
+            backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url("https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&q=80&w=2000")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed'
         }}>
-            {/* Background Decorations */}
-            <div style={{
-                position: 'absolute',
-                top: '-10%',
-                right: '-5%',
-                width: '600px',
-                height: '600px',
-                background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%)',
-                filter: 'blur(80px)',
-                borderRadius: '50%',
-                zIndex: -1
-            }} />
+
 
             <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
                 <div className="animate-fade-in" style={{
@@ -112,13 +104,14 @@ export default function Hero() {
                     gap: '24px',
                     alignItems: 'center',
                     animationDelay: '0.4s',
-                    color: '#6B7280',
-                    fontSize: '0.95rem'
+                    marginTop: '32px'
                 }}>
-                    <span style={{ fontWeight: '500' }}>Популярно:</span>
-                    <Link href="/tasks?category=Cleaning" style={{ color: '#4B5563', textDecoration: 'underline', textUnderlineOffset: '4px', fontWeight: '500' }}>Уборка дома</Link>
-                    <Link href="/tasks?category=Assembly" style={{ color: '#4B5563', textDecoration: 'underline', textUnderlineOffset: '4px', fontWeight: '500' }}>Сборка мебели</Link>
-                    <Link href="/tasks?category=Delivery" style={{ color: '#4B5563', textDecoration: 'underline', textUnderlineOffset: '4px', fontWeight: '500' }}>Доставка товаров</Link>
+                    <Link href="/create-task" className="btn btn-primary" style={{ minWidth: '180px' }}>
+                        Post a Task
+                    </Link>
+                    <Link href="/register" className="btn btn-outline" style={{ minWidth: '180px' }}>
+                        Become a Service Provider
+                    </Link>
                 </div>
 
 

@@ -33,9 +33,22 @@ export default function LoginPage() {
                 throw new Error(json.error || 'Login failed');
             }
 
-            // Use full page reload to ensure server components refresh
-            // This ensures the Header component re-renders with the new auth state
-            window.location.href = '/';
+            // Fetch user profile to determine role
+            const profileRes = await fetch('/api/profile');
+            if (profileRes.ok) {
+                const profileData = await profileRes.json();
+                const role = profileData.user.role;
+
+                if (role === 'PROVIDER') {
+                    window.location.href = '/provider';
+                } else if (role === 'CUSTOMER') {
+                    window.location.href = '/customer';
+                } else {
+                    window.location.href = '/';
+                }
+            } else {
+                window.location.href = '/';
+            }
         } catch (err: any) {
             setError(err.message);
         } finally {

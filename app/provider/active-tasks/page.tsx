@@ -42,8 +42,8 @@ export default async function ActiveTasksPage() {
         }
     });
 
-    const accentColor = '#0D9488';
-    const accentColorLight = '#CCFBF1';
+    const accentColor = 'var(--primary)';
+    const accentColorLight = '#DBEAFE';
 
     return (
         <>
@@ -85,7 +85,7 @@ export default async function ActiveTasksPage() {
                         <p style={{ color: '#64748B', marginBottom: '20px', fontSize: '0.9rem' }}>
                             When clients accept your responses, tasks will appear here
                         </p>
-                        <Link href="/tasks" style={{
+                        <Link href="/provider/task-feed" style={{
                             display: 'inline-block',
                             padding: '10px 20px',
                             backgroundColor: accentColor,
@@ -113,7 +113,7 @@ export default async function ActiveTasksPage() {
                                 <div style={{ flex: 1 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px', flexWrap: 'wrap' }}>
                                         <Link
-                                            href={`/tasks/${task.id}`}
+                                            href={`/provider/tasks/${task.id}`}
                                             style={{ fontSize: '1rem', fontWeight: '600', color: '#1E293B', textDecoration: 'none' }}
                                         >
                                             {task.title}
@@ -158,7 +158,7 @@ export default async function ActiveTasksPage() {
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     <Link
-                                        href={`/tasks/${task.id}`}
+                                        href={`/provider/tasks/${task.id}`}
                                         style={{
                                             padding: '8px 14px',
                                             backgroundColor: accentColor,
@@ -173,7 +173,7 @@ export default async function ActiveTasksPage() {
                                         Open Task
                                     </Link>
                                     <Link
-                                        href={`/messages?userId=${task.userId}&taskId=${task.id}`}
+                                        href={`/provider/messages?userId=${task.userId}&taskId=${task.id}`}
                                         style={{
                                             padding: '8px 14px',
                                             backgroundColor: 'white',

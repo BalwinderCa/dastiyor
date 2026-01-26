@@ -29,7 +29,7 @@ export default async function SubscriptionPage() {
         redirect('/access-denied');
     }
 
-    const accentColor = '#0D9488';
+    const accentColor = 'var(--primary)';
 
     const daysLeft = user.subscription && user.subscription.isActive
         ? Math.ceil((new Date(user.subscription.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
@@ -92,11 +92,11 @@ export default async function SubscriptionPage() {
 
             {/* Current Plan */}
             {user.subscription && user.subscription.isActive && (
-                <div style={{ 
-                    backgroundColor: 'white', 
-                    padding: '20px', 
-                    borderRadius: '16px', 
-                    border: '1px solid #E2E8F0', 
+                <div style={{
+                    backgroundColor: 'white',
+                    padding: '20px',
+                    borderRadius: '16px',
+                    border: '1px solid #E2E8F0',
                     marginBottom: '24px',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -117,8 +117,8 @@ export default async function SubscriptionPage() {
                         <div>
                             <div style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '4px' }}>Current Plan</div>
                             <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#1E293B' }}>
-                                {user.subscription.plan === 'premium' ? 'Premium' : 
-                                 user.subscription.plan === 'standard' ? 'Pro' : 'Basic'} Plan
+                                {user.subscription.plan === 'premium' ? 'Premium' :
+                                    user.subscription.plan === 'standard' ? 'Pro' : 'Basic'} Plan
                             </div>
                         </div>
                     </div>
@@ -166,7 +166,7 @@ export default async function SubscriptionPage() {
                         <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#1E293B', marginBottom: '8px' }}>
                             {plan.name}
                         </h3>
-                        
+
                         <div style={{ marginBottom: '20px' }}>
                             <span style={{ fontSize: '2rem', fontWeight: '700', color: '#1E293B' }}>{plan.price}</span>
                             <span style={{ color: '#64748B', fontSize: '0.9rem' }}> сум/{plan.period}</span>

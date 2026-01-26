@@ -46,7 +46,7 @@ export default async function ProfilePage() {
     const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
     const averageRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : '0.0';
 
-    const accentColor = '#0D9488';
+    const accentColor = 'var(--primary)';
 
     return (
         <>
@@ -61,7 +61,7 @@ export default async function ProfilePage() {
                     </p>
                 </div>
                 <Link
-                    href="/profile/edit"
+                    href="/provider/profile/edit"
                     style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -120,10 +120,7 @@ export default async function ProfilePage() {
                                 <Phone size={16} color="#64748B" />
                                 {user.phone}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '0.9rem' }}>
-                                <MapPin size={16} color="#64748B" />
-                                {user.city || 'Not specified'}
-                            </div>
+
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '0.9rem' }}>
                                 <Calendar size={16} color="#64748B" />
                                 Joined {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
