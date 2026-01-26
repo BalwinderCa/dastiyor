@@ -46,7 +46,9 @@
 │  Customer Login  │
 └────────┬─────────┘
          │
-         ├─→ Dashboard
+         │
+         ├─→ Sidebar Navigation
+         │   ├─→ Dashboard
          │   ├─→ My Tasks
          │   ├─→ Active Tasks
          │   ├─→ Completed Tasks
@@ -97,7 +99,8 @@
            │   ├─→ Active? → Continue
            │   └─→ Expired? → Subscription Page
            │
-           ├─→ Dashboard
+           ├─→ Sidebar Navigation
+           │   ├─→ Dashboard
            │   ├─→ Active Tasks
            │   ├─→ My Responses
            │   ├─→ Completed Tasks
@@ -106,12 +109,16 @@
            │   └─→ Profile Settings
            │
            ├─→ Browse Tasks
-           │   ├─→ Apply Filters
+           │   ├─→ Sidebar Filters
            │   │   ├─→ Category
            │   │   ├─→ City
            │   │   ├─→ Budget
            │   │   ├─→ Urgency
            │   │   └─→ Date
+           │   ├─→ Sort Tasks
+           │   │   ├─→ Newest
+           │   │   ├─→ Oldest
+           │   │   └─→ Budget (High/Low)
            │   ├─→ View Task Details
            │   └─→ Submit Response
            │

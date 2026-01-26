@@ -11,8 +11,8 @@ A full-featured online services marketplace platform where customers post servic
 
 ### User Roles
 - **Guest**: Browse tasks, view public information, sign up/login
-- **Customer**: Post tasks, manage responses, chat with providers, leave reviews
-- **Service Provider**: Browse tasks, respond to tasks (with subscription), manage profile, view reviews
+- **Customer**: Post tasks, manage responses, chat with providers, leave reviews, dedicated sidebar navigation
+- **Service Provider**: Browse tasks, respond to tasks (with subscription), manage profile, view reviews, dedicated sidebar navigation
 - **Administrator**: Full platform management, user moderation, analytics
 
 ### Core Functionality
@@ -26,7 +26,7 @@ A full-featured online services marketplace platform where customers post servic
 
 #### Task Management
 - **Task Creation**: Multi-step form with category, subcategory, description, location, budget, urgency, due date, and image uploads
-- **Task Feed**: Filterable task listing with category, location, budget, urgency, and date filters
+- **Task Feed**: Advanced filtering via sidebar (Category, Location, Budget, Urgency, Date) and sorting options (Newest, Oldest, Budget High/Low)
 - **Task Status**: OPEN → IN_PROGRESS → COMPLETED / CANCELLED
 - **Task Details**: Full task information with responses, provider selection, and status management
 
@@ -325,8 +325,9 @@ npx prisma db push           # Push schema changes (dev only)
 - Rate limiting
 - Priority placement for Premium plans
 - Response rejection
-- Date/time filters
+- Advanced filtering & sorting
 - Subcategory support
+- Sidebar navigation for Customer & Provider
 - Estimated completion time
 
 🔧 **Ready for Integration**
