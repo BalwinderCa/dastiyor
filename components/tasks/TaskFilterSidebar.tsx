@@ -4,22 +4,19 @@ import { LayoutGrid, Wrench, Monitor, SprayCan, Truck, Zap, Clock, Calendar } fr
 import { useState, useCallback, useTransition } from 'react';
 
 const CATEGORIES = [
-    { name: 'Все задачи', value: '', icon: LayoutGrid },
-    { name: 'Ремонт', value: 'Ремонт', icon: Wrench },
-    { name: 'IT и Веб', value: 'IT и Веб', icon: Monitor },
-    { name: 'Уборка', value: 'Уборка', icon: SprayCan },
-    { name: 'Доставка', value: 'Доставка', icon: Truck },
+    { name: 'All Tasks', value: '', icon: LayoutGrid },
+    { name: 'Home Repair', value: 'Ремонт', icon: Wrench },
+    { name: 'IT & Web', value: 'IT и Веб', icon: Monitor },
+    { name: 'Cleaning', value: 'Уборка', icon: SprayCan },
+    { name: 'Delivery', value: 'Доставка', icon: Truck },
 ];
 
 const CITIES = [
-    'Душанбе',
-    'Худжанд',
-    'Бохтар',
-    'Куляб',
-    'Истаравшан',
-    'Турсунзаде',
-    'Исфара',
-    'Канибадам',
+    'Tashkent',
+    'Samarkand',
+    'Chilanzar',
+    'Mirabad',
+    'Center',
 ];
 
 const URGENCY_OPTIONS = [
@@ -28,7 +25,12 @@ const URGENCY_OPTIONS = [
     { label: 'Гибкий график', value: 'low', icon: Calendar },
 ];
 
-export default function TaskFilterSidebar() {
+interface TaskFilterSidebarProps {
+    categoryCounts?: any[];
+    totalOpenTasks?: number;
+}
+
+export default function TaskFilterSidebar({ categoryCounts = [], totalOpenTasks = 0 }: TaskFilterSidebarProps) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -40,14 +42,10 @@ export default function TaskFilterSidebar() {
     const currentMinBudget = searchParams.get('minBudget') || '';
     const currentMaxBudget = searchParams.get('maxBudget') || '';
     const currentUrgency = searchParams.get('urgency')?.split(',').filter(Boolean) || [];
-    const currentDateFrom = searchParams.get('dateFrom') || '';
-    const currentDateTo = searchParams.get('dateTo') || '';
 
     // Local state for budget inputs
     const [minBudget, setMinBudget] = useState(currentMinBudget);
     const [maxBudget, setMaxBudget] = useState(currentMaxBudget);
-    const [dateFrom, setDateFrom] = useState(currentDateFrom);
-    const [dateTo, setDateTo] = useState(currentDateTo);
 
     // Create URL with new params
     const createQueryString = useCallback(
@@ -107,72 +105,50 @@ export default function TaskFilterSidebar() {
         });
     };
 
-    const handleDateApply = () => {
-        startTransition(() => {
-            const queryString = createQueryString({
-                dateFrom: dateFrom || null,
-                dateTo: dateTo || null
-            });
-            router.push(queryString ? `${pathname}?${queryString}` : pathname);
-        });
-    };
-
     const clearFilters = () => {
         setMinBudget('');
         setMaxBudget('');
-        setDateFrom('');
-        setDateTo('');
         startTransition(() => {
             router.push(pathname);
         });
     };
 
-    const hasActiveFilters = currentCategory || currentCity || currentMinBudget || currentMaxBudget || currentUrgency.length > 0 || currentDateFrom || currentDateTo;
+    const hasActiveFilters = currentCategory || currentCity || currentMinBudget || currentMaxBudget || currentUrgency.length > 0;
+
+    const getCategoryCount = (value: string) => {
+        if (!value) return totalOpenTasks;
+        const countObj = categoryCounts.find(c => c.category === value);
+        return countObj ? countObj._count : 0;
+    };
 
     return (
         <div style={{
-            backgroundColor: 'white',
-            padding: '24px',
-            borderRadius: '16px',
-            border: '1px solid #E5E7EB',
-            height: 'fit-content',
-            position: 'sticky',
-            top: '100px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '24px',
             opacity: isPending ? 0.7 : 1,
             transition: 'opacity 0.2s',
             width: '100%',
-            boxSizing: 'border-box'
         }}>
-            {/* Clear Filters Button */}
-            {hasActiveFilters && (
-                <button
-                    onClick={clearFilters}
-                    style={{
-                        width: '100%',
-                        padding: '10px',
-                        marginBottom: '20px',
-                        backgroundColor: '#FEE2E2',
-                        color: '#DC2626',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        fontSize: '0.9rem'
-                    }}
-                >
-                    Сбросить фильтры
-                </button>
-            )}
+            {/* Categories Card */}
+            <div style={{
+                backgroundColor: 'var(--white)',
+                padding: '24px',
+                borderRadius: '16px',
+                border: '1px solid var(--border)',
+                boxShadow: 'var(--shadow-sm)'
+            }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text)' }}>Categories</h4>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6" /></svg>
+                </div>
 
-            {/* Categories */}
-            <div style={{ marginBottom: '32px' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#111827', marginBottom: '16px' }}>
-                    Категории
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {CATEGORIES.map((cat) => {
                         const Icon = cat.icon;
                         const isActive = currentCategory === cat.value;
+                        const count = getCategoryCount(cat.value);
+
                         return (
                             <button
                                 key={cat.value || 'all'}
@@ -181,191 +157,230 @@ export default function TaskFilterSidebar() {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '10px',
-                                    padding: '10px 12px',
-                                    borderRadius: '8px',
+                                    justifyContent: 'space-between',
+                                    padding: '12px 14px',
+                                    borderRadius: '10px',
                                     border: 'none',
                                     cursor: 'pointer',
-                                    backgroundColor: isActive ? '#EEF2FF' : 'transparent',
-                                    color: isActive ? '#6366F1' : '#4B5563',
-                                    fontWeight: isActive ? '600' : '500',
-                                    fontSize: '0.9rem',
-                                    textAlign: 'left',
+                                    backgroundColor: isActive ? 'rgba(37, 99, 235, 0.1)' : 'transparent',
+                                    color: isActive ? 'var(--primary)' : 'var(--text-light)',
                                     transition: 'all 0.2s',
                                     width: '100%'
                                 }}
                             >
-                                <Icon size={18} />
-                                {cat.name}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <Icon size={18} style={{ color: isActive ? 'var(--primary)' : 'var(--text-light)' }} />
+                                    <span style={{ fontWeight: isActive ? '700' : '500', fontSize: '0.95rem' }}>{cat.name}</span>
+                                </div>
+                                <span style={{
+                                    fontSize: '0.8rem',
+                                    fontWeight: '700',
+                                    color: isActive ? 'var(--primary)' : 'var(--text-light)',
+                                    opacity: count > 0 ? 1 : 0.5
+                                }}>
+                                    {count.toLocaleString()}
+                                </span>
                             </button>
                         );
                     })}
                 </div>
             </div>
 
-            <div style={{ height: '1px', backgroundColor: '#E5E7EB', marginBottom: '24px' }}></div>
-
-            {/* Location */}
-            <div style={{ marginBottom: '24px' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#111827', marginBottom: '12px' }}>
-                    Местоположение
-                </h4>
-                <select
-                    value={currentCity}
-                    onChange={(e) => handleCityChange(e.target.value)}
-                    style={{
-                        width: '100%',
-                        padding: '12px',
-                        borderRadius: '8px',
-                        border: '1px solid #E5E7EB',
-                        backgroundColor: '#F9FAFB',
-                        outline: 'none',
-                        fontSize: '0.95rem',
-                        color: '#4B5563',
-                        cursor: 'pointer'
-                    }}
-                >
-                    <option value="">Все города</option>
-                    {CITIES.map(c => (
-                        <option key={c} value={c}>{c}</option>
-                    ))}
-                </select>
+            {/* Location Card */}
+            <div style={{
+                backgroundColor: 'var(--white)',
+                padding: '24px',
+                borderRadius: '16px',
+                border: '1px solid var(--border)',
+            }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text)', marginBottom: '16px' }}>Location</h4>
+                <div style={{ position: 'relative' }}>
+                    <select
+                        value={currentCity}
+                        onChange={(e) => handleCityChange(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '12px 16px',
+                            borderRadius: '10px',
+                            border: '1px solid var(--border)',
+                            backgroundColor: 'var(--secondary)',
+                            outline: 'none',
+                            fontSize: '0.95rem',
+                            color: 'var(--text)',
+                            cursor: 'pointer',
+                            appearance: 'none',
+                            fontWeight: '500'
+                        }}
+                    >
+                        <option value="">Select City</option>
+                        {CITIES.map(c => (
+                            <option key={c} value={c}>{c}</option>
+                        ))}
+                    </select>
+                    <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+                    </div>
+                </div>
             </div>
 
-            <div style={{ height: '1px', backgroundColor: '#E5E7EB', marginBottom: '24px' }}></div>
+            {/* Budget Range Card */}
+            <div style={{
+                backgroundColor: 'var(--white)',
+                padding: '24px',
+                borderRadius: '16px',
+                border: '1px solid var(--border)',
+            }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text)', marginBottom: '20px' }}>Budget Range</h4>
 
-            {/* Budget Range */}
-            <div style={{ marginBottom: '24px' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#111827', marginBottom: '12px' }}>
-                    Бюджет (сомони)
-                </h4>
-                <div style={{ 
-                    display: 'flex', 
-                    gap: '8px', 
-                    marginBottom: '12px',
-                    width: '100%',
-                    boxSizing: 'border-box'
-                }}>
+                {/* Functional Dual Range Slider */}
+                <div style={{ padding: '0 10px', marginBottom: '32px', position: 'relative' }}>
+                    <div style={{ height: '4px', backgroundColor: 'var(--border)', position: 'relative', borderRadius: '4px' }}>
+                        <div style={{
+                            position: 'absolute',
+                            left: `${(parseInt(minBudget || '0') / 5000) * 100}%`,
+                            right: `${100 - (parseInt(maxBudget || '5000') / 5000) * 100}%`,
+                            height: '100%',
+                            backgroundColor: 'var(--primary)',
+                            borderRadius: '4px'
+                        }}></div>
+                    </div>
+
                     <input
-                        type="number"
-                        placeholder="От"
-                        value={minBudget}
-                        onChange={(e) => setMinBudget(e.target.value)}
-                        style={{
-                            flex: 1,
-                            minWidth: 0,
-                            width: '50%',
-                            padding: '10px',
-                            border: '1px solid #E5E7EB',
-                            borderRadius: '8px',
-                            fontSize: '0.9rem',
-                            outline: 'none',
-                            boxSizing: 'border-box'
+                        type="range"
+                        min="0"
+                        max="5000"
+                        value={minBudget || 0}
+                        onChange={(e) => {
+                            const val = Math.min(parseInt(e.target.value), parseInt(maxBudget || '5000') - 100);
+                            setMinBudget(val.toString());
                         }}
+                        style={{
+                            position: 'absolute',
+                            top: '-5px',
+                            left: '0',
+                            width: '100%',
+                            appearance: 'none',
+                            background: 'none',
+                            pointerEvents: 'none'
+                        }}
+                        className="range-input"
                     />
                     <input
-                        type="number"
-                        placeholder="До"
-                        value={maxBudget}
-                        onChange={(e) => setMaxBudget(e.target.value)}
-                        style={{
-                            flex: 1,
-                            minWidth: 0,
-                            width: '50%',
-                            padding: '10px',
-                            border: '1px solid #E5E7EB',
-                            borderRadius: '8px',
-                            fontSize: '0.9rem',
-                            outline: 'none',
-                            boxSizing: 'border-box'
+                        type="range"
+                        min="0"
+                        max="5000"
+                        value={maxBudget || 5000}
+                        onChange={(e) => {
+                            const val = Math.max(parseInt(e.target.value), parseInt(minBudget || '0') + 100);
+                            setMaxBudget(val.toString());
                         }}
+                        style={{
+                            position: 'absolute',
+                            top: '-5px',
+                            left: '0',
+                            width: '100%',
+                            appearance: 'none',
+                            background: 'none',
+                            pointerEvents: 'none'
+                        }}
+                        className="range-input"
                     />
+
+                    <style jsx>{`
+                        .range-input::-webkit-slider-thumb {
+                            height: 18px;
+                            width: 18px;
+                            border-radius: 50%;
+                            background: var(--primary);
+                            border: 3px solid white;
+                            box-shadow: 0 0 0 1px var(--primary);
+                            cursor: pointer;
+                            appearance: none;
+                            pointer-events: auto;
+                            margin-top: -1px;
+                        }
+                    `}</style>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', fontSize: '0.75rem', color: 'var(--text-light)', fontWeight: '600' }}>
+                        <span>$0</span>
+                        <span>$5,000+</span>
+                    </div>
                 </div>
+
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '16px' }}>
+                    <div style={{ flex: 1, backgroundColor: 'var(--secondary)', borderRadius: '8px', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', padding: '0 12px', height: '42px' }}>
+                        <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-light)', marginRight: '4px' }}>$</span>
+                        <input
+                            type="number"
+                            value={minBudget}
+                            onChange={(e) => setMinBudget(e.target.value)}
+                            placeholder="0"
+                            style={{
+                                width: '100%',
+                                background: 'transparent',
+                                border: 'none',
+                                outline: 'none',
+                                fontSize: '0.9rem',
+                                fontWeight: '600',
+                                color: 'var(--text)'
+                            }}
+                        />
+                    </div>
+                    <span style={{ color: 'var(--text-light)', fontWeight: '500' }}>-</span>
+                    <div style={{ flex: 1, backgroundColor: 'var(--secondary)', borderRadius: '8px', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', padding: '0 12px', height: '42px' }}>
+                        <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-light)', marginRight: '4px' }}>$</span>
+                        <input
+                            type="number"
+                            value={maxBudget}
+                            onChange={(e) => setMaxBudget(e.target.value)}
+                            placeholder="5000"
+                            style={{
+                                width: '100%',
+                                background: 'transparent',
+                                border: 'none',
+                                outline: 'none',
+                                fontSize: '0.9rem',
+                                fontWeight: '600',
+                                color: 'var(--text)'
+                            }}
+                        />
+                    </div>
+                </div>
+
                 <button
                     onClick={handleBudgetApply}
                     type="button"
                     style={{
                         width: '100%',
-                        padding: '10px',
-                        backgroundColor: '#F3F4F6',
-                        color: '#374151',
+                        padding: '12px',
+                        backgroundColor: 'var(--primary)',
+                        color: 'var(--white)',
                         border: 'none',
-                        borderRadius: '8px',
-                        fontWeight: '500',
+                        borderRadius: '10px',
+                        fontWeight: '700',
                         cursor: 'pointer',
-                        fontSize: '0.85rem'
+                        fontSize: '0.9rem',
+                        transition: 'opacity 0.2s'
                     }}
                 >
-                    Применить бюджет
+                    Apply Filter
                 </button>
             </div>
 
-            <div style={{ height: '1px', backgroundColor: '#E5E7EB', marginBottom: '24px' }}></div>
-
-            {/* Date Filter */}
-            <div style={{ marginBottom: '24px' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#111827', marginBottom: '12px' }}>
-                    Дата выполнения
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
-                    <input
-                        type="date"
-                        placeholder="От"
-                        value={dateFrom}
-                        onChange={(e) => setDateFrom(e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #E5E7EB',
-                            borderRadius: '8px',
-                            fontSize: '0.9rem',
-                            outline: 'none'
-                        }}
-                    />
-                    <input
-                        type="date"
-                        placeholder="До"
-                        value={dateTo}
-                        onChange={(e) => setDateTo(e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            border: '1px solid #E5E7EB',
-                            borderRadius: '8px',
-                            fontSize: '0.9rem',
-                            outline: 'none'
-                        }}
-                    />
-                </div>
-                <button
-                    onClick={handleDateApply}
-                    type="button"
-                    style={{
-                        width: '100%',
-                        padding: '10px',
-                        backgroundColor: '#F3F4F6',
-                        color: '#374151',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem'
-                    }}
-                >
-                    Применить дату
-                </button>
-            </div>
-
-            <div style={{ height: '1px', backgroundColor: '#E5E7EB', marginBottom: '24px' }}></div>
-
-            {/* Urgency */}
-            <div>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#111827', marginBottom: '12px' }}>
-                    Срочность
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {URGENCY_OPTIONS.map((opt) => {
-                        const Icon = opt.icon;
+            {/* Urgency Card */}
+            <div style={{
+                backgroundColor: 'var(--white)',
+                padding: '24px',
+                borderRadius: '16px',
+                border: '1px solid var(--border)',
+            }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text)', marginBottom: '16px' }}>Urgency</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    {[
+                        { label: 'As soon as possible', value: 'urgent' },
+                        { label: 'Within a week', value: 'normal' },
+                        { label: 'Flexible schedule', value: 'low' }
+                    ].map((opt) => {
                         const isChecked = currentUrgency.includes(opt.value);
                         return (
                             <label
@@ -373,25 +388,57 @@ export default function TaskFilterSidebar() {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '10px',
-                                    fontSize: '0.9rem',
-                                    color: '#4B5563',
-                                    cursor: 'pointer'
+                                    gap: '12px',
+                                    fontSize: '0.95rem',
+                                    color: 'var(--text)',
+                                    cursor: 'pointer',
+                                    fontWeight: '500'
                                 }}
                             >
-                                <input
-                                    type="checkbox"
-                                    checked={isChecked}
-                                    onChange={(e) => handleUrgencyChange(opt.value, e.target.checked)}
-                                    style={{ accentColor: '#6366F1', width: '16px', height: '16px' }}
-                                />
-                                <Icon size={16} style={{ color: opt.value === 'urgent' ? '#EF4444' : '#6B7280' }} />
+                                <div style={{
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '5px',
+                                    border: isChecked ? 'none' : '2px solid var(--border)',
+                                    backgroundColor: isChecked ? 'var(--primary)' : 'transparent',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.2s'
+                                }}>
+                                    {isChecked && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
+                                    <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={(e) => handleUrgencyChange(opt.value, e.target.checked)}
+                                        style={{ display: 'none' }}
+                                    />
+                                </div>
                                 {opt.label}
                             </label>
                         );
                     })}
                 </div>
             </div>
+
+            {hasActiveFilters && (
+                <button
+                    onClick={clearFilters}
+                    style={{
+                        padding: '12px',
+                        backgroundColor: 'transparent',
+                        color: 'var(--text-light)',
+                        border: '1px dashed var(--border)',
+                        borderRadius: '10px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.2s'
+                    }}
+                >
+                    Clear all filters
+                </button>
+            )}
         </div>
     );
 }

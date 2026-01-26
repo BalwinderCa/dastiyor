@@ -38,10 +38,15 @@ export default async function ProviderDashboard() {
     }
 
     // Get provider statistics
-    const [reviews, completedTasks, activeTasks, responses, newOpportunities] = await Promise.all([
+    // Calculate date for 30 days ago for trends
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const [reviews, completedTasks, activeTasks, responses, newOpportunities, completedRecent] = await Promise.all([
         prisma.review.findMany({
             where: { reviewedId: user.id },
-            select: { rating: true }
+            select: { rating: true, createdAt: true },
+            orderBy: { createdAt: 'desc' }
         }),
         prisma.task.count({
             where: { assignedUserId: user.id, status: 'COMPLETED' }
@@ -71,12 +76,31 @@ export default async function ProviderDashboard() {
                 user: { select: { fullName: true } },
                 _count: { select: { responses: true } }
             }
+        }),
+        prisma.task.count({
+            where: {
+                assignedUserId: user.id,
+                status: 'COMPLETED',
+                updatedAt: { gte: thirtyDaysAgo }
+            }
         })
     ]);
 
     const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
     const averageRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : '0.0';
-    const ratingChange = reviews.length > 0 ? '+0.2' : null;
+
+    // Calculate rating change dynamically based on the latest review
+    // (Current Avg) - (Avg before latest review)
+    let ratingChange = null;
+    if (reviews.length >= 2) {
+        const currentAvg = totalRating / reviews.length;
+        const previousTotal = totalRating - reviews[0].rating;
+        const previousAvg = previousTotal / (reviews.length - 1);
+        const diff = currentAvg - previousAvg;
+        if (Math.abs(diff) >= 0.1) {
+            ratingChange = (diff > 0 ? '+' : '') + diff.toFixed(1);
+        }
+    }
 
     const responseStats = {
         pending: responses.filter(r => r.status === 'PENDING').length,
@@ -153,9 +177,11 @@ export default async function ProviderDashboard() {
                         }}>
                             <CheckCircle size={22} color={accentColor} />
                         </div>
-                        <span style={{ fontSize: '0.75rem', color: accentColor, fontWeight: '600' }}>
-                            📈 +{completedTasks > 0 ? Math.floor(completedTasks * 0.1) : 0}
-                        </span>
+                        {completedRecent > 0 && (
+                            <span style={{ fontSize: '0.75rem', color: accentColor, fontWeight: '600' }} title="Last 30 days">
+                                📈 +{completedRecent}
+                            </span>
+                        )}
                     </div>
                     <div style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '4px' }}>
                         Completed Tasks
@@ -184,9 +210,10 @@ export default async function ProviderDashboard() {
                         }}>
                             <DollarSign size={22} color="#22C55E" />
                         </div>
-                        <span style={{ fontSize: '0.75rem', color: accentColor, fontWeight: '600' }}>
-                            📈 +${user.balance > 0 ? (user.balance * 0.15).toFixed(0) : 0}
-                        </span>
+                        {/* 
+                         TODO: Implement transaction history to calculate earnings growth.
+                         For now, show absolute value only to avoid fake data.
+                        */}
                     </div>
                     <div style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '4px' }}>
                         Total Earned

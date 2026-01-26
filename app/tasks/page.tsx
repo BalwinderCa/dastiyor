@@ -42,43 +42,7 @@ export default async function TasksPage({ searchParams }: Props) {
     }
 
     // Budget filter
-    if (minBudget || maxBudget) {
-        // We need to filter tasks where budgetAmount is within range
-        // Note: budgetAmount is stored as string, so we need to handle this carefully
-        const budgetConditions: any[] = [];
 
-        if (minBudget) {
-            // For tasks with fixed budget, check if amount >= minBudget
-            budgetConditions.push({
-                budgetType: 'fixed',
-                budgetAmount: { gte: minBudget }
-            });
-        }
-
-        if (maxBudget) {
-            budgetConditions.push({
-                budgetType: 'fixed',
-                budgetAmount: { lte: maxBudget }
-            });
-        }
-
-        // If both min and max, combine them
-        if (minBudget && maxBudget) {
-            where.AND = [
-                {
-                    OR: [
-                        { budgetType: 'negotiable' }, // Include negotiable tasks
-                        {
-                            AND: [
-                                { budgetType: 'fixed' },
-                                { budgetAmount: { not: null } }
-                            ]
-                        }
-                    ]
-                }
-            ];
-        }
-    }
 
     // Urgency filter
     if (urgency) {
@@ -117,14 +81,16 @@ export default async function TasksPage({ searchParams }: Props) {
         orderBy = { budgetAmount: 'asc' };
     }
 
-    // Get total count for pagination
-    const totalTasks = await prisma.task.count({ where });
 
-    const tasks = await prisma.task.findMany({
+    // Get total count for pagination (initially all matching non-budget criteria)
+    // We will fetch ALL tasks matching the non-budget criteria to filter in memory
+    // and then paginate manually. This is necessary because budgetAmount is a String
+    // in the DB, making precise numeric filtering impossible efficiently with Prisma/SQLite
+    // string comparison logic (e.g. "100" < "2" lexicographically).
+
+    const allMatchingTasks = await prisma.task.findMany({
         where,
         orderBy,
-        skip,
-        take: TASKS_PER_PAGE,
         include: {
             _count: {
                 select: { responses: true }
@@ -144,21 +110,41 @@ export default async function TasksPage({ searchParams }: Props) {
         }
     });
 
+    // In-memory budget filtering
+    let filteredTasks = allMatchingTasks;
+
+    if (minBudget || maxBudget) {
+        const min = minBudget ? parseInt(minBudget) : 0;
+        const max = maxBudget ? parseInt(maxBudget) : Infinity;
+
+        filteredTasks = allMatchingTasks.filter(task => {
+            if (task.budgetType === 'negotiable') return true; // Include negotiable for now, or decide based on logic
+            if (task.budgetType === 'fixed' && task.budgetAmount) {
+                const amount = parseInt(task.budgetAmount);
+                return !isNaN(amount) && amount >= min && amount <= max;
+            }
+            return false;
+        });
+    }
+
+    const totalTasks = filteredTasks.length;
+    const tasks = filteredTasks.slice(skip, skip + TASKS_PER_PAGE);
+
     // Sort tasks: Premium subscribers' responses first
     const sortedTasks = tasks.sort((a, b) => {
-        const aHasPremium = a.responses.some((r: any) => 
-            r.user.subscription && 
-            r.user.subscription.plan === 'premium' && 
+        const aHasPremium = a.responses.some((r: any) =>
+            r.user.subscription &&
+            r.user.subscription.plan === 'premium' &&
             r.user.subscription.isActive &&
             new Date(r.user.subscription.endDate) > new Date()
         );
-        const bHasPremium = b.responses.some((r: any) => 
-            r.user.subscription && 
-            r.user.subscription.plan === 'premium' && 
+        const bHasPremium = b.responses.some((r: any) =>
+            r.user.subscription &&
+            r.user.subscription.plan === 'premium' &&
             r.user.subscription.isActive &&
             new Date(r.user.subscription.endDate) > new Date()
         );
-        
+
         if (aHasPremium && !bHasPremium) return -1;
         if (!aHasPremium && bHasPremium) return 1;
         return 0; // Maintain original order for same priority
@@ -184,33 +170,78 @@ export default async function TasksPage({ searchParams }: Props) {
     return (
         <div style={{ backgroundColor: 'var(--secondary)', minHeight: '100vh', padding: '40px 0' }}>
             <div className="container">
-                <div style={{ marginBottom: '24px' }}>
-                    <h1 className="heading-lg">Найти задания</h1>
-                    {activeFilters.length > 0 && (
+                {/* Find Work Header */}
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                    marginBottom: '32px'
+                }}>
+                    <div>
+                        <h1 style={{
+                            fontSize: '2.5rem',
+                            fontWeight: '800',
+                            color: 'var(--text)',
+                            marginBottom: '8px'
+                        }}>Find Work</h1>
                         <div style={{
                             display: 'flex',
-                            flexWrap: 'wrap',
+                            alignItems: 'center',
                             gap: '8px',
-                            marginTop: '12px'
+                            color: 'var(--text-light)',
+                            fontSize: '1rem',
+                            fontWeight: '500'
                         }}>
-                            {activeFilters.map((filter, idx) => (
-                                <span
-                                    key={idx}
-                                    style={{
-                                        backgroundColor: '#EEF2FF',
-                                        color: '#6366F1',
-                                        padding: '4px 12px',
-                                        borderRadius: '20px',
-                                        fontSize: '0.85rem',
-                                        fontWeight: '500'
-                                    }}
-                                >
-                                    {filter}
-                                </span>
-                            ))}
+                            <span style={{ color: 'var(--primary)' }}>⚡</span>
+                            <span>{totalOpenTasks.toLocaleString()} tasks available in your area</span>
                         </div>
-                    )}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                        <div style={{
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            color: 'var(--primary)',
+                            padding: '8px 16px',
+                            borderRadius: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontWeight: '700',
+                            fontSize: '0.85rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                        }}>
+                            <span style={{ fontSize: '1rem' }}>✓</span> PRO MEMBER
+                        </div>
+                        <TaskSortSelect defaultValue={sort || 'newest'} />
+                    </div>
                 </div>
+
+                {activeFilters.length > 0 && (
+                    <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '8px',
+                        marginBottom: '24px'
+                    }}>
+                        {activeFilters.map((filter, idx) => (
+                            <span
+                                key={idx}
+                                style={{
+                                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                    color: 'var(--primary)',
+                                    padding: '6px 14px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: '600',
+                                    border: '1px solid var(--border)'
+                                }}
+                            >
+                                {filter}
+                            </span>
+                        ))}
+                    </div>
+                )}
 
                 <div style={{
                     display: 'grid',
@@ -220,34 +251,15 @@ export default async function TasksPage({ searchParams }: Props) {
                     {/* Sidebar */}
                     <aside>
                         <Suspense fallback={<div>Loading filters...</div>}>
-                            <TaskFilterSidebar />
+                            <TaskFilterSidebar
+                                categoryCounts={categoryCounts}
+                                totalOpenTasks={totalOpenTasks}
+                            />
                         </Suspense>
                     </aside>
 
                     {/* Feed */}
                     <main>
-                        <div style={{
-                            marginBottom: '16px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            backgroundColor: 'white',
-                            padding: '16px 20px',
-                            borderRadius: '12px',
-                            border: '1px solid var(--border)'
-                        }}>
-                            <span style={{ color: 'var(--text)', fontWeight: '600' }}>
-                                {totalTasks} {totalTasks === 1 ? 'задание' : 'заданий'} найдено
-                                {category && <span style={{ color: 'var(--text-light)', fontWeight: '400' }}> в "{category}"</span>}
-                                {totalTasks > TASKS_PER_PAGE && (
-                                    <span style={{ color: 'var(--text-light)', fontWeight: '400', fontSize: '0.9rem' }}>
-                                        {' • '}Показано {skip + 1}-{Math.min(skip + TASKS_PER_PAGE, totalTasks)} из {totalTasks}
-                                    </span>
-                                )}
-                            </span>
-                            <TaskSortSelect defaultValue={sort || 'newest'} />
-                        </div>
-
                         {sortedTasks.length === 0 ? (
                             <div style={{
                                 textAlign: 'center',
@@ -265,15 +277,15 @@ export default async function TasksPage({ searchParams }: Props) {
                         ) : (
                             <div style={{ display: 'grid', gap: '16px' }}>
                                 {sortedTasks.map((task: any) => {
-                                    const hasPremiumResponse = task.responses.some((r: any) => 
-                                        r.user.subscription && 
-                                        r.user.subscription.plan === 'premium' && 
+                                    const hasPremiumResponse = task.responses.some((r: any) =>
+                                        r.user.subscription &&
+                                        r.user.subscription.plan === 'premium' &&
                                         r.user.subscription.isActive &&
                                         new Date(r.user.subscription.endDate) > new Date()
                                     );
-                                    
+
                                     return (
-                                        <TaskCard 
+                                        <TaskCard
                                             key={task.id}
                                             task={{
                                                 id: task.id,
@@ -287,7 +299,7 @@ export default async function TasksPage({ searchParams }: Props) {
                                                 responseCount: task._count.responses,
                                                 status: task.status,
                                                 hasPremiumResponse
-                                            }} 
+                                            }}
                                         />
                                     );
                                 })}

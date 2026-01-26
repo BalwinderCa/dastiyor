@@ -2,18 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 import {
     LayoutDashboard,
     PlusCircle,
     ClipboardList,
     MessageSquare,
-    User,
-    LogOut
+    User
 } from 'lucide-react';
 
 export default function CustomerSidebarNav() {
-    const router = useRouter();
     const pathname = usePathname();
     const accentColor = 'var(--primary)';
 
@@ -30,16 +27,6 @@ export default function CustomerSidebarNav() {
             return pathname === href;
         }
         return pathname === href || pathname.startsWith(href + '/');
-    };
-
-    const handleLogout = async () => {
-        try {
-            await fetch('/api/auth/logout', { method: 'POST' });
-            router.refresh();
-            window.location.href = '/login';
-        } catch (error) {
-            console.error('Logout failed', error);
-        }
     };
 
     return (
@@ -72,30 +59,7 @@ export default function CustomerSidebarNav() {
                 );
             })}
 
-            <button
-                onClick={handleLogout}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '12px 14px',
-                    borderRadius: '10px',
-                    backgroundColor: 'transparent',
-                    color: '#ef4444',
-                    textDecoration: 'none',
-                    fontWeight: '500',
-                    fontSize: '0.9rem',
-                    transition: 'all 0.15s ease',
-                    marginTop: 'auto',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer',
-                    justifyContent: 'flex-start'
-                }}
-            >
-                <LogOut size={18} />
-                Log Out
-            </button>
+
         </nav>
     );
 }

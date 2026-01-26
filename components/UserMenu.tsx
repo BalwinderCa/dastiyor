@@ -102,30 +102,25 @@ export default function UserMenu({ user }: UserMenuProps) {
                             <p style={{ fontWeight: '600', color: 'var(--text)' }}>{user.fullName}</p>
                         </div>
 
-                        {user.role === 'PROVIDER' ? (
-                            /* Provider Menu - All links go to dashboard */
-                            <>
-                                <Link href="/provider" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--primary)', fontSize: '0.95rem', fontWeight: '600', transition: 'background 0.2s', backgroundColor: '#DBEAFE' }} className="hover:bg-gray-100">
-                                    <LayoutDashboard size={18} /> Dashboard
-                                </Link>
-                            </>
-                        ) : (
-                            /* Customer Menu */
-                            <>
-                                <Link href="/customer" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--primary)', fontSize: '0.95rem', fontWeight: '600', transition: 'background 0.2s', backgroundColor: '#DBEAFE' }} className="hover:bg-gray-100">
-                                    <LayoutDashboard size={18} /> Dashboard
-                                </Link>
-                                <Link href="/customer/profile" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
-                                    <User size={18} /> Profile
-                                </Link>
-                                <Link href="/customer/my-tasks" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
-                                    <ClipboardList size={18} /> My Tasks
-                                </Link>
-                                <Link href="/customer/messages" onClick={() => setIsOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', fontWeight: '500', transition: 'background 0.2s' }} className="hover:bg-gray-100">
-                                    <MessageSquare size={18} /> Messages
-                                </Link>
-                            </>
-                        )}
+                        <Link
+                            href={user.role === 'PROVIDER' ? '/provider' : '/customer'}
+                            onClick={() => setIsOpen(false)}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '10px 12px',
+                                borderRadius: '8px',
+                                color: 'var(--primary)',
+                                fontSize: '0.95rem',
+                                fontWeight: '600',
+                                transition: 'background 0.2s',
+                                backgroundColor: '#DBEAFE'
+                            }}
+                            className="hover:bg-gray-100"
+                        >
+                            <LayoutDashboard size={18} /> Dashboard
+                        </Link>
                         <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: '8px 0' }} />
                         <button
                             onClick={handleLogout}

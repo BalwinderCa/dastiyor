@@ -13,6 +13,7 @@ import {
     Bell,
     Settings
 } from 'lucide-react';
+import UserMenu from '@/components/UserMenu';
 import ProviderSidebarNav from './ProviderSidebarNav';
 
 export const dynamic = 'force-dynamic';
@@ -145,45 +146,8 @@ export default async function ProviderLayout({
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <button style={{ position: 'relative', cursor: 'pointer', background: 'none', border: 'none', padding: '8px' }}>
-                            <Bell size={20} color="#64748B" />
-                            <div style={{
-                                position: 'absolute',
-                                top: '4px',
-                                right: '4px',
-                                width: '8px',
-                                height: '8px',
-                                backgroundColor: '#EF4444',
-                                borderRadius: '50%'
-                            }} />
-                        </button>
-                        <Link href="/provider/profile" style={{ cursor: 'pointer', padding: '8px' }}>
-                            <Settings size={20} color="#64748B" />
-                        </Link>
-                        <Link href="/provider/profile" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontWeight: '600', fontSize: '0.85rem', color: '#1E293B' }}>
-                                    {user.fullName}
-                                </div>
-                                <div style={{ fontSize: '0.7rem', color: '#64748B' }}>
-                                    Top Rated Contractor
-                                </div>
-                            </div>
-                            <div style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '50%',
-                                backgroundColor: accentColor,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white',
-                                fontWeight: '700',
-                                fontSize: '1rem'
-                            }}>
-                                {user.fullName.charAt(0).toUpperCase()}
-                            </div>
-                        </Link>
+                        {/* UserMenu handles Bell, Profile, and Logout */}
+                        <UserMenu user={user} />
                     </div>
                 </header>
 

@@ -31,7 +31,7 @@ async function seedMockData() {
         let users = [...existingUsers];
         console.log('👥 Creating additional test users if needed...');
         const hashedPassword = await bcrypt.hash('password123', 10);
-        
+
         const additionalUsers = [
             {
                 email: 'customer1@test.com',
@@ -44,6 +44,18 @@ async function seedMockData() {
                 fullName: 'Мария Петрова',
                 role: 'CUSTOMER',
                 phone: '+992901111112',
+            },
+            {
+                email: 'customer3@test.com',
+                fullName: 'Дилшод Назаров',
+                role: 'CUSTOMER',
+                phone: '+992901111117',
+            },
+            {
+                email: 'customer4@test.com',
+                fullName: 'Елена Смирнова',
+                role: 'CUSTOMER',
+                phone: '+992901111118',
             },
             {
                 email: 'provider1@test.com',
@@ -81,13 +93,40 @@ async function seedMockData() {
                 skills: 'Доставка, Перевозка',
                 isVerified: true,
             },
+            {
+                email: 'provider5@test.com',
+                fullName: 'Ольга Красота',
+                role: 'PROVIDER',
+                phone: '+992901111119',
+                bio: 'Дипломированный визажист и мастер маникюра. Выезд на дом.',
+                skills: 'Макияж, Маникюр, Брови',
+                isVerified: false,
+            },
+            {
+                email: 'provider6@test.com',
+                fullName: 'Рустам Электрик',
+                role: 'PROVIDER',
+                phone: '+992901111120',
+                bio: 'Электромонтажные работы любой сложности. Допуск до 1000В.',
+                skills: 'Электрика, Монтаж',
+                isVerified: true,
+            },
+            {
+                email: 'provider7@test.com',
+                fullName: 'Аниса Учитель',
+                role: 'PROVIDER',
+                phone: '+992901111121',
+                bio: 'Репетитор по английскому и математике. Опыт работы в школе 5 лет.',
+                skills: 'Репетитор, Английский, Математика',
+                isVerified: true,
+            },
         ];
 
         for (const userData of additionalUsers) {
             const existing = await prisma.user.findUnique({
                 where: { email: userData.email }
             });
-            
+
             if (!existing) {
                 const newUser = await prisma.user.create({
                     data: {
@@ -233,17 +272,197 @@ async function seedMockData() {
                 city: 'Душанбе',
                 urgency: 'urgent',
             },
+            {
+                title: 'Сборка кухни IKEA',
+                description: 'Нужно собрать и установить кухонный гарнитур IKEA. Опыт работы обязателен. Инструменты ваши.',
+                category: 'Ремонт',
+                subcategory: 'Сборка мебели',
+                budgetType: 'fixed',
+                budgetAmount: '400',
+                city: 'Душанбе',
+                urgency: 'normal',
+            },
+            {
+                title: 'Логотип для стартапа',
+                description: 'Разработать логотип и брендбук для нового стартапа в сфере экологии. Стиль: минимализм.',
+                category: 'IT и Веб',
+                subcategory: 'Дизайн',
+                budgetType: 'fixed',
+                budgetAmount: '1200',
+                city: 'Душанбе',
+                urgency: 'normal',
+            },
+            {
+                title: 'Химчистка трехкомнатной квартиры',
+                description: 'Нужна полная химчистка мебели и ковров в 3-х комнатной квартире.',
+                category: 'Уборка',
+                subcategory: 'Химчистка',
+                budgetType: 'fixed',
+                budgetAmount: '500',
+                city: 'Бохтар',
+                urgency: 'low',
+            },
+            {
+                title: 'Мастер на час: повесить гардину',
+                description: 'Нужно повесить гардину длиной 3 метра. Стены бетонные. Перфоратор обязателен.',
+                category: 'Ремонт',
+                subcategory: 'Мастер на час',
+                budgetType: 'fixed',
+                budgetAmount: '50',
+                city: 'Душанбе',
+                urgency: 'normal',
+            },
+            {
+                title: 'Настройка контекстной рекламы',
+                description: 'Нужно настроить Google Ads и Яндекс Директ для интернет-магазина одежды.',
+                category: 'IT и Веб',
+                subcategory: 'Маркетинг',
+                budgetType: 'negotiable',
+                budgetAmount: null,
+                city: 'Душанбе',
+                urgency: 'normal',
+            },
+            {
+                title: 'Переезд: погрузка и разгрузка',
+                description: 'Нужны 2 грузчика на 4 часа. Переезд из одной квартиры в другую в пределах города.',
+                category: 'Доставка',
+                subcategory: 'Грузчики',
+                budgetType: 'fixed',
+                budgetAmount: '200',
+                city: 'Худжанд',
+                urgency: 'urgent',
+            },
+            {
+                title: 'Диагностика стиральной машины',
+                description: 'Стиральная машина LG не сливает воду. Нужна диагностика и ремонт на дому.',
+                category: 'Ремонт техники',
+                subcategory: 'Бытовая техника',
+                budgetType: 'negotiable',
+                budgetAmount: null,
+                city: 'Куляб',
+                urgency: 'urgent',
+            },
+            {
+                title: 'Репетитор по математике (5 класс)',
+                description: 'Подтянуть школьную программу. 5 класс. Онлайн или на дому.',
+                category: 'Образование',
+                subcategory: 'Репетиторы',
+                budgetType: 'fixed',
+                budgetAmount: '100',
+                city: 'Душанбе',
+                urgency: 'low',
+            },
+            {
+                title: 'Вечерний макияж на свадьбу',
+                description: 'Нужен стойкий вечерний макияж для подружки невесты. Выезд на дом.',
+                category: 'Красота',
+                subcategory: 'Макияж',
+                budgetType: 'fixed',
+                budgetAmount: '150',
+                city: 'Душанбе',
+                urgency: 'urgent',
+            },
+            {
+                title: 'Установка кондиционера',
+                description: 'Монтаж сплит-системы на 5 этаже. Внешний блок под окно.',
+                category: 'Ремонт',
+                subcategory: 'Техника',
+                budgetType: 'fixed',
+                budgetAmount: '600',
+                city: 'Истаравшан',
+                urgency: 'normal',
+            },
+            {
+                title: 'Копирайтинг для блога',
+                description: 'Написать 10 статей на тему здорового питания для Instagram блога.',
+                category: 'IT и Веб',
+                subcategory: 'Тексты',
+                budgetType: 'fixed',
+                budgetAmount: '300',
+                city: 'Душанбе',
+                urgency: 'low',
+            },
+            {
+                title: 'Мойка окон (балкон)',
+                description: 'Помыть окна на лоджии 6 метров. 7 этаж.',
+                category: 'Уборка',
+                subcategory: 'Мойка окон',
+                budgetType: 'fixed',
+                budgetAmount: '150',
+                city: 'Душанбе',
+                urgency: 'normal',
+            },
+            {
+                title: 'Курьер на день',
+                description: 'Развезти документы по 5 адресам в центре города.',
+                category: 'Доставка',
+                subcategory: 'Курьерские услуги',
+                budgetType: 'fixed',
+                budgetAmount: '100',
+                city: 'Душанбе',
+                urgency: 'urgent',
+            },
+            {
+                title: 'Монтаж видео для YouTube',
+                description: 'Смонтировать ролик на 10 минут из исходников. Добавить титры и переходы.',
+                category: 'IT и Веб',
+                subcategory: 'Видео',
+                budgetType: 'fixed',
+                budgetAmount: '500',
+                city: 'Душанбе',
+                urgency: 'normal',
+            },
+            {
+                title: 'Замена розеток',
+                description: 'Нужно заменить 5 розеток и 2 выключателя в квартире.',
+                category: 'Ремонт',
+                subcategory: 'Электрика',
+                budgetType: 'fixed',
+                budgetAmount: '120',
+                city: 'Турсунзаде',
+                urgency: 'normal',
+            },
+            {
+                title: 'Фотосессия для меню ресторана',
+                description: 'Фуд-съемка 20 блюд для нового меню. Обработка фото.',
+                category: 'IT и Веб',
+                subcategory: 'Фото',
+                budgetType: 'fixed',
+                budgetAmount: '1000',
+                city: 'Душанбе',
+                urgency: 'normal',
+            },
+            {
+                title: 'Реставрация старого шкафа',
+                description: 'Снять лак, покрасить и заменить фурнитуру на советском шкафу.',
+                category: 'Ремонт',
+                subcategory: 'Реставрация',
+                budgetType: 'negotiable',
+                budgetAmount: null,
+                city: 'Худжанд',
+                urgency: 'low',
+            },
+            {
+                title: 'Укладка ламината',
+                description: 'Положить ламинат в комнате 18 кв.м. Материал есть.',
+                category: 'Ремонт',
+                subcategory: 'Полы',
+                budgetType: 'fixed',
+                budgetAmount: '350',
+                city: 'Душанбе',
+                urgency: 'normal',
+            },
         ];
 
         const createdTasks = [];
-        for (let i = 0; i < taskTemplates.length && i < customers.length; i++) {
+        for (let i = 0; i < taskTemplates.length; i++) {
             const template = taskTemplates[i];
             const customer = customers[i % customers.length];
-            
+
             // Create task with some date variation
             const createdAt = new Date();
             createdAt.setDate(createdAt.getDate() - Math.floor(Math.random() * 7));
-            
+
             const dueDate = new Date();
             dueDate.setDate(dueDate.getDate() + Math.floor(Math.random() * 14) + 3);
 
@@ -271,22 +490,22 @@ async function seedMockData() {
         // Create responses for some tasks
         console.log('💬 Creating mock responses...');
         let acceptedTaskId: string | null = null;
-        
+
         for (const task of createdTasks.filter(t => t.status === 'OPEN')) {
             // 70% chance to have responses
             if (Math.random() > 0.3) {
                 const numResponses = Math.floor(Math.random() * 3) + 1;
                 const shuffledProviders = [...providers].sort(() => Math.random() - 0.5);
-                
+
                 for (let i = 0; i < numResponses && i < shuffledProviders.length; i++) {
                     const provider = shuffledProviders[i];
-                    const price = task.budgetType === 'fixed' 
+                    const price = task.budgetType === 'fixed'
                         ? String(Math.floor(parseInt(task.budgetAmount || '0') * (0.8 + Math.random() * 0.4)))
                         : String(Math.floor(Math.random() * 2000) + 500);
-                    
+
                     // Only accept one response per task
                     const shouldAccept = !acceptedTaskId && Math.random() > 0.6;
-                    
+
                     const response = await prisma.response.create({
                         data: {
                             taskId: task.id,
@@ -378,7 +597,7 @@ async function seedMockData() {
         if (customers.length > 0 && providers.length > 0) {
             const customer = customers[0];
             const provider = providers[0];
-            
+
             await prisma.message.create({
                 data: {
                     senderId: customer.id,
@@ -460,7 +679,7 @@ async function seedMockData() {
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         console.log('📊 SUMMARY');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-        
+
         const stats = {
             users: await prisma.user.count(),
             tasks: await prisma.task.count(),

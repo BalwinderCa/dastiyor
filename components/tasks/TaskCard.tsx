@@ -46,7 +46,7 @@ export default function TaskCard({ task }: { task: Task }) {
         fetch(`/api/tasks/favorite?taskId=${task.id}`)
             .then(res => res.json())
             .then(data => setIsFavorite(data.isFavorite || false))
-            .catch(() => {});
+            .catch(() => { });
     }, [task.id]);
 
     const handleFavorite = async (e: React.MouseEvent) => {
@@ -93,245 +93,120 @@ export default function TaskCard({ task }: { task: Task }) {
 
     return (
         <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--white)',
             borderRadius: '16px',
             padding: '24px',
-            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
-            border: '1px solid #E5E7EB',
+            boxShadow: 'var(--shadow-sm)',
+            border: '1px solid var(--border)',
             position: 'relative',
-            transition: 'all 0.2s ease',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: '24px'
         }}>
-            {/* Absolute link for entire card */}
-            <Link href={`/tasks/${task.id}`} style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                {/* Left content */}
-                <div style={{ flex: 1, paddingRight: '24px' }}>
-                    {/* Category & Urgency badges */}
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
-                        <span style={{
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            color: '#6366F1',
-                            backgroundColor: '#EEF2FF',
-                            padding: '4px 10px',
-                            borderRadius: '20px',
-                        }}>
-                            {task.category}
-                        </span>
-                        {task.urgency === 'urgent' && (
-                            <span style={{
-                                fontSize: '0.75rem',
-                                fontWeight: '600',
-                                color: urgency.color,
-                                backgroundColor: urgency.bg,
-                                padding: '4px 10px',
-                                borderRadius: '20px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px'
-                            }}>
-                                <Zap size={12} /> {urgency.label}
-                            </span>
-                        )}
-                    </div>
-
+            {/* Main content */}
+            <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                     <h3 style={{
-                        fontSize: '1.15rem',
-                        fontWeight: '700',
-                        color: '#111827',
-                        marginBottom: '8px',
-                        lineHeight: '1.4'
+                        fontSize: '1.25rem',
+                        fontWeight: '800',
+                        color: 'var(--text)',
+                        margin: 0,
                     }}>
                         {task.title}
                     </h3>
-                    {task.description && task.description.trim() && task.description.toLowerCase() !== 'desc' && (
-                        <p style={{
-                            color: '#6B7280',
-                            fontSize: '0.9rem',
-                            lineHeight: '1.6',
-                            marginBottom: '16px',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden'
-                        }}>
-                            {task.description}
-                        </p>
-                    )}
-
-                    <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6B7280', fontSize: '0.85rem' }}>
-                            <MapPin size={15} /> {task.city || 'Удалённо'}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6B7280', fontSize: '0.85rem' }}>
-                            <Clock size={15} /> {task.postedAt}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6B7280', fontSize: '0.85rem' }}>
-                            <MessageCircle size={15} /> {task.responseCount ?? 0} откликов
-                        </div>
-                    </div>
                 </div>
 
-                {/* Right column - Badges, action buttons, price */}
-                <div style={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'flex-end', 
-                    gap: '12px', 
-                    minWidth: '130px', 
-                    position: 'relative', 
-                    zIndex: 5 
+                <p style={{
+                    color: 'var(--text-light)',
+                    fontSize: '0.95rem',
+                    lineHeight: '1.6',
+                    marginBottom: '20px',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    fontWeight: '500'
                 }}>
-                    {/* Premium Badge - only for OPEN tasks with premium responses */}
+                    {task.description}
+                </p>
+
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontSize: '0.9rem', fontWeight: '600' }}>
+                        <MapPin size={18} /> {task.city || 'Remote'}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontSize: '0.9rem', fontWeight: '600' }}>
+                        <Clock size={18} /> {task.postedAt}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontSize: '0.9rem', fontWeight: '600' }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        {task.responseCount ?? 0} Bids received
+                    </div>
+                </div>
+            </div>
+
+            {/* Right side information & Action */}
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+                gap: '16px',
+                minWidth: '140px'
+            }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                     {showPremium && (
                         <div style={{
-                            backgroundColor: '#F59E0B',
-                            color: 'white',
-                            padding: '6px 12px',
-                            borderRadius: '6px',
-                            fontSize: '0.75rem',
-                            fontWeight: '700',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                            whiteSpace: 'nowrap',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px'
-                        }}>
-                            ⭐ Premium
-                        </div>
-                    )}
-
-                    {/* Status Badge - for non-OPEN tasks */}
-                    {status !== 'OPEN' && (
-                        <div style={{
-                            backgroundColor: statusInfo.bg,
-                            color: statusInfo.text,
-                            padding: '6px 12px',
-                            borderRadius: '6px',
+                            backgroundColor: 'var(--primary)',
+                            color: 'var(--white)',
+                            padding: '4px 10px',
+                            borderRadius: '20px',
                             fontSize: '0.7rem',
-                            fontWeight: '700',
+                            fontWeight: '800',
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                            whiteSpace: 'nowrap'
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            marginBottom: '4px'
                         }}>
-                            {statusInfo.label}
+                            <span style={{ fontSize: '12px' }}>★</span> PREMIUM
                         </div>
                     )}
-
-                    {/* Action buttons */}
-                    <div style={{ 
-                        display: 'flex', 
-                        gap: '8px'
+                    <div style={{
+                        fontSize: '1.5rem',
+                        fontWeight: '900',
+                        color: 'var(--text)',
+                        lineHeight: '1.2'
                     }}>
-                        <button
-                            onClick={handleShare}
-                            style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '8px',
-                                border: '1px solid #E5E7EB',
-                                backgroundColor: 'white',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                position: 'relative',
-                                zIndex: 10
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#F9FAFB';
-                                e.currentTarget.style.borderColor = '#3B82F6';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = 'white';
-                                e.currentTarget.style.borderColor = '#E5E7EB';
-                            }}
-                            title="Поделиться"
-                        >
-                            <Share2 size={18} color="#6B7280" />
-                        </button>
-                        <button
-                            onClick={handleFavorite}
-                            disabled={isLoading}
-                            style={{
-                                width: '36px',
-                                height: '36px',
-                                borderRadius: '8px',
-                                border: '1px solid #E5E7EB',
-                                backgroundColor: 'white',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                opacity: isLoading ? 0.6 : 1,
-                                position: 'relative',
-                                zIndex: 10
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isLoading) {
-                                    e.currentTarget.style.backgroundColor = '#FEF2F2';
-                                    e.currentTarget.style.borderColor = '#EF4444';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!isLoading) {
-                                    e.currentTarget.style.backgroundColor = 'white';
-                                    e.currentTarget.style.borderColor = '#E5E7EB';
-                                }
-                            }}
-                            title={isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
-                        >
-                            <Heart 
-                                size={18} 
-                                color={isFavorite ? "#EF4444" : "#6B7280"} 
-                                fill={isFavorite ? "#EF4444" : "none"} 
-                            />
-                        </button>
+                        ${isNaN(parseInt(task.budget)) ? task.budget : parseInt(task.budget).toLocaleString()}
                     </div>
-
-                    {/* Price section */}
-                    <div style={{ textAlign: 'right' }}>
-                        <div style={{
-                            fontSize: isNegotiable ? '1.1rem' : '1.5rem',
-                            fontWeight: '800',
-                            color: '#111827',
-                            lineHeight: '1.2',
-                            whiteSpace: 'nowrap'
-                        }}>
-                            {task.budget}
-                        </div>
-                        {!isNegotiable && (
-                            <div style={{ fontSize: '0.75rem', color: '#9CA3AF', marginTop: '4px', whiteSpace: 'nowrap' }}>
-                                Фиксированная цена
-                            </div>
-                        )}
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', fontWeight: '700' }}>
+                        {isNegotiable ? 'Negotiable' : 'Fixed Price'}
                     </div>
-
-                    {/* Details button */}
-                    <Link
-                        href={`/tasks/${task.id}`}
-                        style={{
-                            backgroundColor: '#6366F1',
-                            color: 'white',
-                            border: 'none',
-                            padding: '10px 20px',
-                            borderRadius: '8px',
-                            fontWeight: '600',
-                            fontSize: '0.85rem',
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            position: 'relative',
-                            zIndex: 5
-                        }}
-                    >
-                        Подробнее
-                    </Link>
                 </div>
+
+                <Link
+                    href={`/tasks/${task.id}`}
+                    style={{
+                        backgroundColor: isPremium ? 'var(--primary)' : 'var(--secondary)',
+                        color: isPremium ? 'var(--white)' : 'var(--text-light)',
+                        padding: '12px 24px',
+                        borderRadius: '10px',
+                        fontWeight: '700',
+                        fontSize: '0.9rem',
+                        textDecoration: 'none',
+                        transition: 'all 0.2s',
+                        width: '100%',
+                        textAlign: 'center',
+                        border: 'none'
+                    }}
+                >
+                    View Details
+                </Link>
             </div>
         </div>
     );
 }
+
+// Helper to determine if a task is "premium" for styling purposes
+const isPremium = true; // In the mockup, some show blue buttons, others gray. I'll stick to blue for primary action.
