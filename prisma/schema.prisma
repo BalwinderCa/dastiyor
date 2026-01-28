@@ -145,6 +145,18 @@ model PasswordReset {
   user      User     @relation(fields: [userId], references: [id])
 }
 
+// Verification Code Model (OTP)
+model VerificationCode {
+  id        String   @id @default(cuid())
+  phone     String   // The phone number being verified
+  code      String   // The OTP code
+  type      String   // 'REGISTRATION', 'RESET_PASSWORD', 'LOGIN'
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([phone, type])
+}
+
 // Review Model (Ratings)
 model Review {
   id        String   @id @default(cuid())

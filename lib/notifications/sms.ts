@@ -16,61 +16,30 @@ interface SMSOptions {
 
 export async function sendSMS(options: SMSOptions): Promise<boolean> {
     try {
-        // In development, log the SMS instead of sending
+        // In development, we can still log it for easier debugging
         if (process.env.NODE_ENV === 'development') {
             console.log('='.repeat(60));
-            console.log('SMS NOTIFICATION (Development Mode):');
+            console.log('SMS NOTIFICATION (Dev Log):');
             console.log('To:', options.to);
             console.log('Message:', options.message);
             console.log('='.repeat(60));
-            return true;
+            // If you want to ONLY log in dev and not send real SMS, uncomment the next line:
+            // return true;
         }
 
-        // Production: Integrate with your SMS service
-        // Example with Twilio:
-        /*
-        const twilio = require('twilio');
-        const client = twilio(
-            process.env.TWILIO_ACCOUNT_SID!,
-            process.env.TWILIO_AUTH_TOKEN!
-        );
-        
-        await client.messages.create({
-            body: options.message,
-            from: process.env.TWILIO_PHONE_NUMBER!,
-            to: options.to,
-        });
-        */
+        // Use our MessageBird integration
+        const { sendSMS: sendRealSMS } = require('@/lib/messagebird');
 
-        // Example with AWS SNS:
-        /*
-        const AWS = require('aws-sdk');
-        const sns = new AWS.SNS({ region: process.env.AWS_REGION });
-        
-        await sns.publish({
-            PhoneNumber: options.to,
-            Message: options.message,
-        }).promise();
-        */
-
-        // Example with MessageBird:
-        /*
-        const messagebird = require('messagebird')(process.env.MESSAGEBIRD_API_KEY);
-        
-        await new Promise((resolve, reject) => {
-            messagebird.messages.create({
-                originator: process.env.MESSAGEBIRD_ORIGINATOR!,
-                recipients: [options.to],
-                body: options.message,
-            }, (err: any, response: any) => {
-                if (err) reject(err);
-                else resolve(response);
+        try {
+            await sendRealSMS({
+                recipient: options.to,
+                body: options.message
             });
-        });
-        */
-
-        console.warn('SMS service not configured. Set up an SMS provider in lib/notifications/sms.ts');
-        return false;
+            return true;
+        } catch (smsError) {
+            console.error('Failed to send SMS via MessageBird:', smsError);
+            return false;
+        }
     } catch (error) {
         console.error('SMS sending error:', error);
         return false;

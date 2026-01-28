@@ -91,6 +91,62 @@ export default function AdminSettingsPage() {
                     checked={settings.enableSMSNotifications}
                     onChange={(v) => handleChange('enableSMSNotifications', v)}
                 />
+                {settings.enableSMSNotifications && (
+                    <div style={{ marginTop: '-10px', marginBottom: '16px', padding: '16px', backgroundColor: '#F9FAFB', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+                        <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: '#4B5563' }}>Тест отправки SMS</h4>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            <input
+                                type="text"
+                                placeholder="+992XXXXXXXXX"
+                                id="test-sms-phone"
+                                style={{
+                                    flex: 1,
+                                    padding: '8px 12px',
+                                    borderRadius: '6px',
+                                    border: '1px solid #D1D5DB',
+                                    outline: 'none'
+                                }}
+                            />
+                            <button
+                                onClick={async () => {
+                                    const phoneInput = document.getElementById('test-sms-phone') as HTMLInputElement;
+                                    const phone = phoneInput.value;
+                                    if (!phone) return alert('Введите номер телефона');
+
+                                    try {
+                                        const res = await fetch('/api/admin/test-sms', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ phone, message: 'Test message from Dastiyor Admin' })
+                                        });
+                                        const data = await res.json();
+                                        if (data.success) {
+                                            alert('SMS успешно отправлено!');
+                                            phoneInput.value = '';
+                                        } else {
+                                            alert('Ошибка: ' + (data.error || 'Unknown error'));
+                                        }
+                                    } catch (e) {
+                                        alert('Ошибка сети');
+                                        console.error(e);
+                                    }
+                                }}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#4F46E5',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontWeight: '500',
+                                    fontSize: '0.9rem'
+                                }}
+                            >
+                                Отправить тест
+                            </button>
+                        </div>
+                    </div>
+                )}
             </SettingsSection>
 
             {/* Security Settings */}
