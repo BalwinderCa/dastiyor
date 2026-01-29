@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { cookies } from 'next/headers';
 import { verifyJWT } from '@/lib/auth';
 import UserMenu from './UserMenu';
-import { Handshake, LogIn, Heart } from 'lucide-react';
+import { LogIn, Heart } from 'lucide-react';
 
 export default async function Header() {
     const cookieStore = await cookies();
@@ -48,27 +49,16 @@ export default async function Header() {
                 <Link href="/" style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '12px',
                     textDecoration: 'none'
                 }}>
-                    <div style={{
-                        width: '40px',
-                        height: '40px',
-                        backgroundColor: '#6366F1', // Indigo-500
-                        borderRadius: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white'
-                    }}>
-                        <Handshake size={24} strokeWidth={2.5} />
-                    </div>
-                    <span style={{
-                        fontSize: '1.5rem',
-                        fontWeight: '700',
-                        color: '#111827',
-                        letterSpacing: '-0.02em'
-                    }}>Dastiyor</span>
+                    <Image
+                        src="/logo-blue-white.svg"
+                        alt="Dastiyor"
+                        width={150}
+                        height={50}
+                        style={{ objectFit: 'contain' }}
+                        priority
+                    />
                 </Link>
 
                 {/* Center Navigation */}

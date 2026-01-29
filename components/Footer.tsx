@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Handshake } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Footer() {
     return (
@@ -16,23 +16,16 @@ export default function Footer() {
                         <Link href="/" style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px',
                             textDecoration: 'none',
                             marginBottom: '20px'
                         }}>
-                            <div style={{
-                                width: '32px',
-                                height: '32px',
-                                backgroundColor: '#6366F1', // Indigo-500
-                                borderRadius: '8px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white'
-                            }}>
-                                <Handshake size={20} strokeWidth={2.5} />
-                            </div>
-                            <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827' }}>Dastiyor</span>
+                            <Image
+                                src="/logo-blue-white.svg"
+                                alt="Dastiyor"
+                                width={120}
+                                height={40}
+                                style={{ objectFit: 'contain' }}
+                            />
                         </Link>
                         <p style={{ color: '#6B7280', lineHeight: '1.6', fontSize: '0.95rem', maxWidth: '300px' }}>
                             Будущее локальных услуг. Помогаем исполнителям и объединяем сообщества.
