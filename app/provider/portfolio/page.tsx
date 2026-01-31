@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Upload, Image as ImageIcon, X } from 'lucide-react';
-import PortfolioGallery from '@/components/provider/PortfolioGallery';
+// import PortfolioGallery from '@/components/provider/PortfolioGallery';
 
 export default async function ProviderPortfolioPage() {
     const cookieStore = await cookies();
@@ -78,7 +78,10 @@ export default async function ProviderPortfolioPage() {
                     <p style={{ color: 'var(--text-light)', marginBottom: '24px', fontSize: '0.95rem' }}>
                         Добавьте фотографии выполненных работ. Они будут автоматически добавлены из ваших завершенных заданий.
                     </p>
-                    <PortfolioGallery userId={user.id} initialItems={portfolioItems} />
+                    {/* <PortfolioGallery userId={user.id} initialItems={portfolioItems} /> */}
+                    <div className="p-4 border border-dashed rounded-lg text-center text-gray-500">
+                        Portfolio Gallery Component Missing
+                    </div>
                 </div>
 
                 {/* Portfolio from completed tasks */}

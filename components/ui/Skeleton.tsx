@@ -1,9 +1,12 @@
 'use client';
 
-export function Skeleton({ width, height, borderRadius = '8px' }: {
+import { CSSProperties } from 'react';
+
+export function Skeleton({ width, height, borderRadius = '8px', style }: {
     width?: string | number;
     height?: string | number;
     borderRadius?: string;
+    style?: CSSProperties;
 }) {
     return (
         <div
@@ -12,7 +15,8 @@ export function Skeleton({ width, height, borderRadius = '8px' }: {
                 height: height || '20px',
                 borderRadius,
                 backgroundColor: '#E5E7EB',
-                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                ...style
             }}
         />
     );
