@@ -1,0 +1,110 @@
+import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
+
+async function main() {
+    console.log('Start seeding ...');
+
+    // 1. Clean up existing data (optional, be careful in prod)
+    // await prisma.response.deleteMany();
+    // await prisma.task.deleteMany();
+    // await prisma.user.deleteMany();
+
+    // 2. Create Users
+    const customerPassword = await bcrypt.hash('password123', 10);
+    const providerPassword = await bcrypt.hash('password123', 10);
+
+    const customer = await prisma.user.upsert({
+        where: { email: 'customer@example.com' },
+        update: {},
+        create: {
+            email: 'customer@example.com',
+            fullName: 'John Customer',
+            password: customerPassword,
+            role: 'CUSTOMER',
+            phone: '+992900000001',
+        },
+    });
+
+    const provider = await prisma.user.upsert({
+        where: { email: 'provider@example.com' },
+        update: {},
+        create: {
+            email: 'provider@example.com',
+            fullName: 'Master Handyman',
+            password: providerPassword,
+            role: 'PROVIDER',
+            bio: 'Professional handyman with 10 years of experience in plumbing and electrical work.',
+            skills: 'Plumbing, Electrical, Carpentry',
+            phone: '+992900000002',
+            isVerified: true,
+        },
+    });
+
+    console.log({ customer, provider });
+
+    // 3. Create Tasks
+    const categories = ['Ремонт', 'Уборка', 'Доставка', 'IT и Веб'];
+
+    const tasksData = [
+        {
+            title: 'Fix Leaking Faucet',
+            description: 'Kitchen faucet is dripping constantly. Need a plumber to fix or replace it.',
+            category: 'Ремонт',
+            budgetType: 'fixed',
+            budgetAmount: '150',
+            city: 'Dushanbe',
+            urgency: 'normal',
+            status: 'OPEN',
+        },
+        {
+            title: 'House Cleaning',
+            description: 'Need full house cleaning for a 3-bedroom apartment.',
+            category: 'Уборка',
+            budgetType: 'negotiable',
+            city: 'Khujand',
+            urgency: 'urgent',
+            status: 'OPEN',
+        },
+        {
+            title: 'Deliver Package to Airport',
+            description: 'Small package needs to be delivered to the airport cargo terminal.',
+            category: 'Доставка',
+            budgetType: 'fixed',
+            budgetAmount: '50',
+            city: 'Dushanbe',
+            urgency: 'urgent',
+            status: 'OPEN',
+        },
+        {
+            title: 'Website Development',
+            description: 'Need a simple landing page for my small business.',
+            category: 'IT и Веб',
+            budgetType: 'negotiable',
+            city: 'Remote',
+            urgency: 'normal',
+            status: 'OPEN',
+        },
+    ];
+
+    for (const t of tasksData) {
+        await prisma.task.create({
+            data: {
+                ...t,
+                userId: customer.id,
+            },
+        });
+    }
+
+    console.log(`Seeded ${tasksData.length} tasks.`);
+}
+
+main()
+    .catch((e) => {
+        console.error(e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });
