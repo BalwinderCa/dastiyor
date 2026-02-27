@@ -38,7 +38,7 @@ export default async function SubscriptionPage() {
     const plans = [
         {
             name: 'Basic',
-            price: '49,000',
+            price: '99',
             period: 'month',
             features: [
                 '10 responses per month',
@@ -50,7 +50,7 @@ export default async function SubscriptionPage() {
         },
         {
             name: 'Pro',
-            price: '99,000',
+            price: '199',
             period: 'month',
             popular: true,
             features: [
@@ -64,7 +64,7 @@ export default async function SubscriptionPage() {
         },
         {
             name: 'Premium',
-            price: '199,000',
+            price: '399',
             period: 'month',
             features: [
                 'Unlimited responses',
@@ -169,7 +169,7 @@ export default async function SubscriptionPage() {
 
                         <div style={{ marginBottom: '20px' }}>
                             <span style={{ fontSize: '2rem', fontWeight: '700', color: '#1E293B' }}>{plan.price}</span>
-                            <span style={{ color: '#64748B', fontSize: '0.9rem' }}> сум/{plan.period}</span>
+                            <span style={{ color: '#64748B', fontSize: '0.9rem' }}> с./мес</span>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>

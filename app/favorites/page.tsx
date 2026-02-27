@@ -39,10 +39,12 @@ export default async function FavoritesPage() {
     return (
         <div style={{ backgroundColor: 'var(--secondary)', minHeight: '100vh', padding: '40px 0' }}>
             <div className="container" style={{ maxWidth: '1200px' }}>
-                <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Heart size={32} color="#EF4444" fill="#EF4444" />
+                <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', marginTop: '-2px' }} aria-hidden>
+                        <Heart size={28} color="#EF4444" fill="#EF4444" />
+                    </span>
                     <div>
-                        <h1 className="heading-lg">Избранные задания</h1>
+                        <h1 className="heading-lg" style={{ margin: 0 }}>Избранные задания</h1>
                         <p style={{ color: 'var(--text-light)', marginTop: '4px' }}>
                             Задания, которые вы сохранили
                         </p>

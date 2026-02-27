@@ -24,14 +24,14 @@ export default function Features() {
                                     <div style={{
                                         width: '50px',
                                         height: '50px',
-                                        borderRadius: '12px',
+                                        borderRadius: '50%',
                                         background: 'var(--primary-light)',
                                         color: 'var(--primary)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        fontSize: '1.5rem',
-                                        flexShrink: 0
+                                        flexShrink: 0,
+                                        lineHeight: 0
                                     }}>
                                         {feature.icon}
                                     </div>
@@ -61,7 +61,7 @@ export default function Features() {
                                 gap: '16px',
                                 alignItems: 'center'
                             }}>
-                                <div style={{ background: '#D1FAE5', padding: '10px', borderRadius: '50%', color: '#10B981' }}><CheckCircle size={24} /></div>
+                                <div style={{ background: '#D1FAE5', padding: '10px', borderRadius: '50%', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 0 }}><CheckCircle size={24} /></div>
                                 <div>
                                     <div style={{ fontWeight: '600' }}>Проверенный Исполнитель</div>
                                     <div style={{ fontSize: '0.9rem', color: 'var(--text-light)' }}>ID и навыки проверены</div>
@@ -77,7 +77,7 @@ export default function Features() {
                                 alignItems: 'center',
                                 transform: 'translateX(20px)'
                             }}>
-                                <div style={{ background: '#DBEAFE', padding: '10px', borderRadius: '50%', color: '#3B82F6' }}><Shield size={24} /></div>
+                                <div style={{ background: '#DBEAFE', padding: '10px', borderRadius: '50%', color: '#3B82F6', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 0 }}><Shield size={24} /></div>
                                 <div>
                                     <div style={{ fontWeight: '600' }}>Безопасные Платежи</div>
                                     <div style={{ fontSize: '0.9rem', color: 'var(--text-light)' }}>Деньги в безопасности</div>
@@ -91,7 +91,7 @@ export default function Features() {
                                 gap: '16px',
                                 alignItems: 'center'
                             }}>
-                                <div style={{ background: '#FEF3C7', padding: '10px', borderRadius: '50%', color: '#F59E0B' }}><Zap size={24} /></div>
+                                <div style={{ background: '#FEF3C7', padding: '10px', borderRadius: '50%', color: '#F59E0B', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 0 }}><Zap size={24} /></div>
                                 <div>
                                     <div style={{ fontWeight: '600' }}>Быстрые Отклики</div>
                                     <div style={{ fontSize: '0.9rem', color: 'var(--text-light)' }}>Предложения за минуты</div>

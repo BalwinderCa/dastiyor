@@ -1,24 +1,30 @@
+import { FileText, MessageCircle, CheckCircle, Sparkles } from 'lucide-react';
+
 export default function HowItWorksPage() {
     const steps = [
         {
             title: "1. Создайте задание",
             description: "Опишите, что нужно сделать, укажите бюджет и выберите удобное время.",
-            icon: "📝"
+            icon: FileText,
+            color: 'var(--primary)'
         },
         {
             title: "2. Получите предложения",
             description: "Получайте отклики от проверенных специалистов. Сравнивайте их профили, рейтинги и цены.",
-            icon: "💬"
+            icon: MessageCircle,
+            color: '#0EA5E9'
         },
         {
             title: "3. Выберите исполнителя",
             description: "Выберите лучшего специалиста для вашей задачи и обсудите детали в чате.",
-            icon: "✅"
+            icon: CheckCircle,
+            color: '#10B981'
         },
         {
             title: "4. Закройте сделку",
             description: "Специалист выполняет задание. Вы оплачиваете работу напрямую и оставляете отзыв.",
-            icon: "🌟"
+            icon: Sparkles,
+            color: '#F59E0B'
         }
     ];
 
@@ -38,20 +44,35 @@ export default function HowItWorksPage() {
                     gap: '40px',
                     marginBottom: '80px'
                 }}>
-                    {steps.map((step, index) => (
-                        <div key={index} style={{
-                            textAlign: 'center',
-                            padding: '32px',
-                            backgroundColor: 'white',
-                            borderRadius: '16px',
-                            border: '1px solid var(--border)',
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.02)'
-                        }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '24px' }}>{step.icon}</div>
-                            <h3 className="heading-md" style={{ marginBottom: '16px' }}>{step.title}</h3>
-                            <p style={{ color: 'var(--text-light)', lineHeight: '1.6' }}>{step.description}</p>
-                        </div>
-                    ))}
+                    {steps.map((step, index) => {
+                        const Icon = step.icon;
+                        return (
+                            <div key={index} style={{
+                                textAlign: 'center',
+                                padding: '32px',
+                                backgroundColor: 'white',
+                                borderRadius: '16px',
+                                border: '1px solid var(--border)',
+                                boxShadow: '0 4px 6px rgba(0,0,0,0.02)'
+                            }}>
+                                <div style={{
+                                    width: '64px',
+                                    height: '64px',
+                                    margin: '0 auto 24px',
+                                    borderRadius: '50%',
+                                    background: `${step.color}18`,
+                                    color: step.color,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Icon size={28} strokeWidth={2} />
+                                </div>
+                                <h3 className="heading-md" style={{ marginBottom: '16px' }}>{step.title}</h3>
+                                <p style={{ color: 'var(--text-light)', lineHeight: '1.6' }}>{step.description}</p>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 <div style={{

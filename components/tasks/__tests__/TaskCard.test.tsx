@@ -53,7 +53,7 @@ describe('TaskCard', () => {
         });
         expect(screen.getByText('Cleaning')).toBeInTheDocument();
         expect(screen.getByText('Dushanbe')).toBeInTheDocument();
-        expect(screen.getByText('500')).toBeInTheDocument();
+        expect(screen.getByText(/500/)).toBeInTheDocument();
     });
 
     it('should display urgency badge', async () => {
@@ -73,7 +73,7 @@ describe('TaskCard', () => {
         });
 
         await waitFor(() => {
-            expect(screen.getByText('5')).toBeInTheDocument();
+            expect(screen.getByText(/5 Bids received/)).toBeInTheDocument();
         });
     });
 

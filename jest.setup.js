@@ -12,10 +12,22 @@ if (typeof global.TextEncoder === 'undefined') {
 if (typeof global.Request === 'undefined') {
   global.Request = class Request {
     constructor(input, init = {}) {
-      this.url = typeof input === 'string' ? input : input.url
-      this.method = init.method || 'GET'
-      this.headers = new Headers(init.headers)
-      this.body = init.body
+      const url = typeof input === 'string' ? input : input?.url;
+      this.method = init.method || 'GET';
+      this.headers = new Headers(init.headers);
+      this.body = init.body;
+      // Use defineProperty so subclasses (e.g. NextRequest) with a read-only url getter don't throw
+      try {
+        Object.defineProperty(this, 'url', { value: url, writable: false, configurable: true });
+      } catch (_) {
+        // ignore if url already defined (e.g. by NextRequest)
+      }
+    }
+    async json() {
+      return Promise.resolve(JSON.parse(this.body || '{}'));
+    }
+    text() {
+      return Promise.resolve(this.body || '');
     }
   }
 }
@@ -27,6 +39,12 @@ if (typeof global.Response === 'undefined') {
       this.status = init.status || 200
       this.statusText = init.statusText || 'OK'
       this.headers = new Headers(init.headers)
+    }
+    static json(data, init = {}) {
+      return new Response(JSON.stringify(data), {
+        ...init,
+        headers: { 'Content-Type': 'application/json', ...init.headers },
+      })
     }
     json() {
       return Promise.resolve(JSON.parse(this.body || '{}'))

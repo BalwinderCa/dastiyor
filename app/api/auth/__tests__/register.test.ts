@@ -58,7 +58,7 @@ describe('/api/auth/register', () => {
         const data = await response.json();
 
         expect(response.status).toBe(400);
-        expect(data.error).toContain('already registered');
+        expect(data.error).toContain('already exists');
     });
 
     it('should create a new user successfully', async () => {

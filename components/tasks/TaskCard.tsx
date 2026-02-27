@@ -106,7 +106,7 @@ export default function TaskCard({ task }: { task: Task }) {
         }}>
             {/* Main content */}
             <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
                     <h3 style={{
                         fontSize: '1.25rem',
                         fontWeight: '800',
@@ -115,6 +115,61 @@ export default function TaskCard({ task }: { task: Task }) {
                     }}>
                         {task.title}
                     </h3>
+                    {task.category && (
+                        <span style={{
+                            padding: '4px 10px',
+                            borderRadius: '6px',
+                            backgroundColor: '#E0F2FE',
+                            color: '#0369A1',
+                            fontSize: '0.75rem',
+                            fontWeight: '600',
+                        }}>
+                            {task.category}
+                        </span>
+                    )}
+                    <span style={{
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        backgroundColor: urgency.bg,
+                        color: urgency.color,
+                        fontSize: '0.75rem',
+                        fontWeight: '600',
+                    }}>
+                        {urgency.label}
+                    </span>
+                    <button
+                        type="button"
+                        onClick={handleFavorite}
+                        disabled={isLoading}
+                        aria-label="Favorite"
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: isLoading ? 'wait' : 'pointer',
+                            padding: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Heart size={20} color="#EF4444" fill={isFavorite ? '#EF4444' : 'none'} />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleShare}
+                        aria-label="Share"
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Share2 size={20} color="var(--text-light)" />
+                    </button>
                 </div>
 
                 <p style={{
@@ -178,7 +233,7 @@ export default function TaskCard({ task }: { task: Task }) {
                         color: 'var(--text)',
                         lineHeight: '1.2'
                     }}>
-                        ${isNaN(parseInt(task.budget)) ? task.budget : parseInt(task.budget).toLocaleString()}
+                        {isNaN(parseInt(task.budget)) ? task.budget : `${parseInt(task.budget).toLocaleString()} с.`}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', fontWeight: '700' }}>
                         {isNegotiable ? 'Negotiable' : 'Fixed Price'}

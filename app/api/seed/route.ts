@@ -48,12 +48,29 @@ export async function GET(request: Request) {
             },
         });
 
+        // 1.1 Create Subscription for Provider (Fix for testing response flow)
+        await prisma.subscription.upsert({
+            where: { userId: provider.id },
+            update: {
+                endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+                isActive: true,
+                plan: 'Standard'
+            },
+            create: {
+                userId: provider.id,
+                plan: 'Standard',
+                startDate: new Date(),
+                endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+                isActive: true
+            }
+        });
+
         // 2. Create Tasks (Linked to Customer)
         const tasksData = [
             {
                 title: 'Починить кран на кухне',
                 description: 'Капает кран на кухне, нужно заменить прокладку или смеситель целиком.',
-                category: 'Ремонт',
+                category: 'Home Repair', // Matching Filter Enum/String
                 budgetType: 'fixed',
                 budgetAmount: '150',
                 city: 'Душанбе',
@@ -63,16 +80,16 @@ export async function GET(request: Request) {
             {
                 title: 'Генеральная уборка квартиры',
                 description: 'Требуется полная уборка 3-комнатной квартиры после ремонта.',
-                category: 'Уборка',
+                category: 'Cleaning',
                 budgetType: 'negotiable',
                 city: 'Худжанд',
                 urgency: 'urgent',
                 status: 'OPEN',
             },
             {
-                title: 'Доствака документов в аэропорт',
+                title: 'Доставка документов в аэропорт',
                 description: 'Нужно срочно отвезти пакет документов в грузовой терминал.',
-                category: 'Доставка',
+                category: 'Delivery',
                 budgetType: 'fixed',
                 budgetAmount: '50',
                 city: 'Душанбе',
@@ -82,7 +99,7 @@ export async function GET(request: Request) {
             {
                 title: 'Создать лендинг пейдж',
                 description: 'Нужен простой одностраничный сайт для кофейни.',
-                category: 'IT и Веб',
+                category: 'Tech Support',
                 budgetType: 'negotiable',
                 city: 'Удаленно',
                 urgency: 'normal',
@@ -91,7 +108,7 @@ export async function GET(request: Request) {
             {
                 title: 'Ремонт стиральной машины',
                 description: 'Стиральная машина LG не сливает воду.',
-                category: 'Ремонт',
+                category: 'Home Repair',
                 budgetType: 'fixed',
                 budgetAmount: '200',
                 city: 'Душанбе',
