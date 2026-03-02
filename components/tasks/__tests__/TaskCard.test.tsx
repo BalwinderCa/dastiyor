@@ -138,4 +138,25 @@ describe('TaskCard', () => {
             expect(shareButton).toBeInTheDocument();
         });
     });
+
+    it('should display urgent urgency badge', async () => {
+        const urgentTask = { ...mockTask, urgency: 'urgent' };
+        await act(async () => {
+            render(<TaskCard task={urgentTask} />);
+        });
+        await waitFor(() => {
+            expect(screen.getByText('Срочно')).toBeInTheDocument();
+        });
+    });
+
+    it('should display View Details link', async () => {
+        await act(async () => {
+            render(<TaskCard task={mockTask} />);
+        });
+        await waitFor(() => {
+            const link = screen.getByRole('link', { name: /view details/i });
+            expect(link).toBeInTheDocument();
+            expect(link).toHaveAttribute('href', '/tasks/task-1');
+        });
+    });
 });

@@ -173,5 +173,131 @@ describe('/api/responses', () => {
             expect(data.response.message).toBe('I can help with this task');
             expect(prisma.response.create).toHaveBeenCalled();
         });
+
+        it('should return 403 if user is not a provider', async () => {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                id: mockUserId,
+                role: 'CUSTOMER',
+                subscription: null,
+            });
+
+            const request = new NextRequest('http://localhost/api/responses', {
+                method: 'POST',
+                body: JSON.stringify({
+                    taskId: 'task-1',
+                    message: 'I can help',
+                    price: '500',
+                }),
+            });
+
+            const response = await POST(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(403);
+            expect(data.error).toContain('Only providers can respond');
+            expect(data.code).toBe('PROVIDER_REQUIRED');
+        });
+
+        it('should return 403 if provider has no active subscription', async () => {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                id: mockUserId,
+                role: 'PROVIDER',
+                subscription: null,
+            });
+
+            const request = new NextRequest('http://localhost/api/responses', {
+                method: 'POST',
+                body: JSON.stringify({
+                    taskId: 'task-1',
+                    message: 'I can help',
+                    price: '500',
+                }),
+            });
+
+            const response = await POST(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(403);
+            expect(data.error).toContain('Active subscription required');
+            expect(data.code).toBe('SUBSCRIPTION_REQUIRED');
+        });
+
+        it('should return 403 if subscription is expired', async () => {
+            (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+                id: mockUserId,
+                role: 'PROVIDER',
+                subscription: {
+                    isActive: true,
+                    endDate: new Date(Date.now() - 86400000),
+                    plan: 'standard',
+                },
+            });
+
+            const request = new NextRequest('http://localhost/api/responses', {
+                method: 'POST',
+                body: JSON.stringify({
+                    taskId: 'task-1',
+                    message: 'I can help',
+                    price: '500',
+                }),
+            });
+
+            const response = await POST(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(403);
+            expect(data.code).toBe('SUBSCRIPTION_REQUIRED');
+        });
+
+        it('should return 404 if task not found', async () => {
+            (prisma.task.findUnique as jest.Mock).mockResolvedValue(null);
+
+            const request = new NextRequest('http://localhost/api/responses', {
+                method: 'POST',
+                body: JSON.stringify({
+                    taskId: 'nonexistent',
+                    message: 'I can help',
+                    price: '500',
+                }),
+            });
+
+            const response = await POST(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(404);
+            expect(data.error).toBe('Task not found');
+        });
+
+        it('should create notification for task owner when response is submitted', async () => {
+            (prisma.response.create as jest.Mock).mockResolvedValue({
+                id: 'resp-1',
+                taskId: 'task-1',
+                userId: mockUserId,
+                message: 'Offer',
+                price: '500',
+                status: 'PENDING',
+            });
+
+            const request = new NextRequest('http://localhost/api/responses', {
+                method: 'POST',
+                body: JSON.stringify({
+                    taskId: 'task-1',
+                    message: 'Offer',
+                    price: '500',
+                }),
+            });
+
+            await POST(request);
+
+            expect(prisma.notification.create).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        userId: 'owner-1',
+                        type: 'NEW_OFFER',
+                        title: 'Новое предложение',
+                    }),
+                })
+            );
+        });
     });
 });
